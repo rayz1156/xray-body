@@ -180,7 +180,10 @@ window.XRAPP = (() => {
     } catch (err) {
       mode = null;
       overlay.classList.remove('hide');
-      setPill('Camera unavailable: ' + (err && err.name ? err.name : 'permission denied') + '. Try Demo without camera.');
+      const why = { NotAllowedError: 'Camera permission was blocked', NotFoundError: 'No camera was found',
+        NotReadableError: 'The camera is busy in another app', OverconstrainedError: 'This camera is not supported',
+        SecurityError: 'Camera needs https or localhost' }[err && err.name] || 'The camera could not start';
+      setPill(why + '. Allow camera access, or try Demo without camera.');
       return;
     }
     try { await loadModels(); } catch (e) {
