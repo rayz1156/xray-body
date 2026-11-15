@@ -127,7 +127,7 @@
   const wait = setInterval(() => {
     tries++;
     const cv = document.getElementById('bones');
-    if (window.SOFT && window.XR && cv && cv.width > 0 && cv.height > 0){
+    if (window.SOFT && typeof XR !== 'undefined' && cv && cv.width > 0 && cv.height > 0){
       clearInterval(wait); run();
     } else if (tries > 100){
       clearInterval(wait);

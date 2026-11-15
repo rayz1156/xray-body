@@ -96,7 +96,7 @@ const XL = (() => {
 
     const once = (L) => {           // Main level: skip repeat ids per side/pair
       if (st.names !== 1) return true;
-      const s = L.seg || '';
+      const s = String(L.seg || '');
       const key = (s.endsWith('_L') || s.endsWith('_R')) ? `${L.id}:${s.slice(-1)}` : L.id;
       if (seen.has(key)) return false;
       seen.add(key);
@@ -158,9 +158,10 @@ const XL = (() => {
   function labelText(L){
     const base = PARTS[L.id] ? PARTS[L.id][0] : L.id;
     let side = '';
+    const s = String(L.seg || '');
     if (PAIRED.has(L.id)){
-      if (L.seg && L.seg.endsWith('_L')) side = 'Left ';
-      else if (L.seg && L.seg.endsWith('_R')) side = 'Right ';
+      if (s.endsWith('_L')) side = 'Left ';
+      else if (s.endsWith('_R')) side = 'Right ';
     }
     return side + base;
   }
