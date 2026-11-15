@@ -53,7 +53,7 @@ const XU = (() => {
     const m = new Float32Array(9);
     for (let c = 0; c < 3; c++)
       for (let r = 0; r < 3; r++)
-        m[c*3+r] = Ft[0][r]*Fr[c][0] + Ft[1][r]*Fr[c][1] + Ft[2][r]*Fr[c][2];
+        m[c*3+r] = Ft[0][r]*Fr[0][c] + Ft[1][r]*Fr[1][c] + Ft[2][r]*Fr[2][c];
     return m;
   };
   const id3 = () => new Float32Array([1,0,0, 0,1,0, 0,0,1]);
