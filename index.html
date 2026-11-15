@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>X-Ray Body Mirror</title>
+<style>
+:root{
+  --bg:#020a12; --ink:#dff1ff; --dim:#8fb2c9; --line:#17384d;
+  --accent:#5ad1ff; --hot:#ffd166;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+#stage{position:fixed;inset:0;}
+#video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:brightness(.6) saturate(.7);transform:scaleX(-1);}
+#video.real{transform:none;}
+#bones{position:absolute;inset:0;width:100%;height:100%;
+  filter:drop-shadow(0 0 6px rgba(90,209,255,.35));}
+#labels{position:absolute;inset:0;width:100%;height:100%;touch-action:none;}
+
+/* status pill */
+#pill{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+  background:rgba(2,10,18,.75);border:1px solid var(--line);color:var(--accent);
+  padding:6px 14px;border-radius:99px;font-size:13px;z-index:30;pointer-events:none;
+  opacity:0;transition:opacity .25s;white-space:nowrap;}
+#pill.show{opacity:1;}
+
+/* controls button */
+#menuBtn{position:fixed;top:max(10px,env(safe-area-inset-top));right:12px;z-index:40;
+  width:42px;height:42px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(2,10,18,.7);color:var(--ink);font-size:20px;line-height:1;}
+#menuBtn:active{background:var(--line);}
+
+/* panel */
+#panel{position:fixed;top:calc(max(10px,env(safe-area-inset-top)) + 48px);right:12px;z-index:40;
+  width:min(300px,calc(100vw - 24px));max-height:calc(100vh - 140px);overflow:auto;
+  background:rgba(4,16,26,.96);border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.5);}
+#panel.open{display:block;}
+#panel h3{margin:10px 0 6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);font-weight:600;}
+#panel h3:first-child{margin-top:0;}
+#panel .close{float:right;background:none;border:none;color:var(--dim);font-size:16px;padding:2px 6px;}
+.row{display:flex;gap:6px;margin:6px 0;}
+.row>button{flex:1;}
+button{cursor:pointer;}
+.btn,.seg{background:var(--line);border:1px solid var(--line);color:var(--ink);
+  padding:8px 8px;border-radius:9px;font-size:13px;}
+.btn.on,.seg.on{background:var(--accent);color:#02131f;border-color:var(--accent);font-weight:600;}
+.btn:active{filter:brightness(1.2);}
+.slider{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:12px;color:var(--dim);}
+.slider input{flex:1;accent-color:var(--accent);}
+
+/* bottom tabs */
+#tabs{position:fixed;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:40;}
+#tabs button{background:rgba(2,10,18,.7);border:1px solid var(--line);color:var(--ink);
+  padding:10px 16px;border-radius:99px;font-size:14px;}
+#tabs button.on{background:var(--accent);color:#02131f;border-color:var(--accent);font-weight:600;}
+
+/* start overlay */
+#overlay{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:18px;text-align:center;
+  background:radial-gradient(ellipse at 50% 40%, #062436 0%, var(--bg) 70%);
+  padding:24px;transition:opacity .4s;}
+#overlay.hide{opacity:0;pointer-events:none;}
+#overlay h1{margin:0;font-size:min(9vw,44px);font-weight:700;letter-spacing:.02em;
+  color:var(--ink);text-shadow:0 0 24px rgba(90,209,255,.45);}
+#overlay p{margin:0;max-width:34em;color:var(--dim);font-size:15px;line-height:1.5;}
+#overlay .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+#overlay .big{padding:14px 22px;font-size:16px;border-radius:12px;}
+#overlay .big.primary{background:var(--accent);color:#02131f;border-color:var(--accent);font-weight:700;}
+#overlay small{color:var(--dim);font-size:11.5px;line-height:1.6;max-width:34em;}
+#overlay .credit{color:#5f7d92;font-size:10.5px;}
+
+/* info card */
+#card{position:fixed;left:12px;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 62px);
+  width:min(320px,calc(100vw - 24px));background:rgba(4,16,26,.95);
+  border:1px solid var(--line);border-radius:14px;padding:12px 14px;z-index:45;display:none;}
+#card.open{display:block;}
+#card .nm{font-size:16px;font-weight:700;color:var(--hot);}
+#card .lt{font-size:12px;color:var(--dim);font-style:italic;margin:2px 0 6px;}
+#card .ds{font-size:13px;line-height:1.5;color:var(--ink);}
+#card .x{float:right;background:none;border:none;color:var(--dim);font-size:15px;}
+</style>
+</head>
+<body>
+<div id="stage">
+  <video id="video" playsinline muted autoplay></video>
+  <canvas id="bones"></canvas>
+  <canvas id="labels"></canvas>
+</div>
+
+<div id="pill"></div>
+<button id="menuBtn" aria-label="Controls">&#9776;</button>
+
+<div id="panel">
+  <button class="close" id="panelClose">&#10005;</button>
+  <h3>Camera</h3>
+  <div class="row">
+    <button class="btn" id="rearBtn">Use rear camera</button>
+    <button class="btn" id="freezeBtn">Freeze</button>
+  </div>
+  <div class="row">
+    <button class="seg on" id="mirrorBtn">Mirror image</button>
+    <button class="seg" id="realBtn">Real image</button>
+  </div>
+  <h3>Skeleton</h3>
+  <div class="row">
+    <button class="seg on" id="xrayBtn">X-ray look</button>
+    <button class="seg" id="solidBtn">Solid</button>
+  </div>
+  <div class="slider"><span>Bone brightness</span>
+    <input type="range" id="bright" min="20" max="200" value="100"></div>
+  <div class="row"><button class="btn on" id="fingersBtn">Detailed finger bones</button></div>
+  <h3>Part names</h3>
+  <div class="row">
+    <button class="seg" id="names0">Hidden</button>
+    <button class="seg on" id="names1">Main bones</button>
+    <button class="seg" id="names2">All details</button>
+  </div>
+  <div class="slider"><span>Text size</span>
+    <input type="range" id="textSize" min="80" max="160" value="100"></div>
+</div>
+
+<div id="tabs">
+  <button id="tabSkel" class="on">Skeleton</button>
+  <button id="tabOrg">Organs</button>
+  <button id="tabCirc">Circulation</button>
+</div>
+
+<div id="card">
+  <button class="x" id="cardClose">&#10005;</button>
+  <div class="nm" id="cardName"></div>
+  <div class="lt" id="cardLatin"></div>
+  <div class="ds" id="cardDesc"></div>
+</div>
+
+<div id="overlay">
+  <h1>X-Ray Body Mirror</h1>
+  <p>See your own skeleton, organs and blood vessels as a live x-ray overlay that follows your body.</p>
+  <div class="btns">
+    <button class="big primary" id="startCam">Start camera</button>
+    <button class="big btn" id="startDemo">Demo without camera</button>
+  </div>
+  <p style="font-size:13px">Tip: Stand back so your whole body is in view.</p>
+  <small>Video never leaves your device. Not a medical device.<br>
+  Anatomy meshes: BodyParts3D, &copy; The Database Center for Life Science, CC BY-SA 2.1 Japan.</small>
+</div>
+
+<script src="data/skeleton-data.js"></script>
+<script src="js/util.js"></script>
+<script src="js/parts.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/pose.js"></script>
+<script src="js/labels.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
