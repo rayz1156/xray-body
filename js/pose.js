@@ -335,7 +335,7 @@ const XP = (() => {
     put(30, shinR(Jw.heel_R)); put(32, shinR(Jw.toe_R));
     for (let i = 0; i < 33; i++) if (!world[i]) world[i] = [0, -1.0, -0.05];
 
-    const HH = 1.9171, Y0 = -1.7550;   // 1.687-unit body span -> 88% of height
+    const HH = 1.9171, Y0 = -1.7316;   // 1.687-unit body span -> 88% of height
     const u = H / HH;                  // px per model unit (matches solver)
     const img = world.map((p) => [0.5 + p[0] * u / W, (p[1] - Y0) / HH, 1.0]);
     return { img, world, hands: {} };

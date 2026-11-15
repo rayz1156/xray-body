@@ -30,4 +30,25 @@
 - M6 camera path MediaPipe pose+hands, rear, freeze, mirror/real — COMMITTED
 - M7 headless Chromium ?demo=1, screenshots, zero console errors — COMMITTED
 
+## XR-002 fix round (after CTO review of XR-001)
+
+Root cause found by CTO (already fixed, commit "Fix rest-to-track rotation"):
+frameMat indexed the rest frame Fr[c][k] instead of Fr[k][c]. Do not change.
+
+- Fingers/palm matrix reuse when no hand data (was double-mirrored, drifted
+  off the palm); mc1 thumb metacarpal segments now get a matrix too — COMMITTED
+- Solver u now measured with the matching rest pair (shoulder-mid/hip-mid),
+  demoFrame(t, W, H) rebuilt from SKEL.joints rest positions with rigid limb
+  rotations; body framed ~5-6% margins top and bottom, both orientations;
+  "Step back" gated to camera mode — COMMITTED
+- Labels: Left/Right prefixes on paired bones, Main-level dedupe, harder
+  collision avoidance; default level remains Main (names=1) — COMMITTED
+- js/selftest.js numeric self-test (?selftest=1): limb distal joints vs
+  tracked landmarks < 10% of bone px length, finger origins < 15% palm
+  length from palm, heart centre inside transformed thorax bounds —
+  COMMITTED, SELFTEST PASS, zero console errors
+- Screenshots retaken: shot-demo-xray.png, shot-demo-organs.png, new
+  shot-demo-circulation.png — COMMITTED
+- docs/LAPORAN.md STATUS: SIAP — COMMITTED
+
 (Update this file after each milestone.)
