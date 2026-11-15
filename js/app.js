@@ -227,13 +227,12 @@ window.XRAPP = (() => {
     try {
       const t = (performance.now() - t0) / 1000;
       if (mode === null) { if (!loading) setPill('', false); return; }
+      const W = bonesCv.width, H = bonesCv.height;
       let frame = null;
       if (st.freeze){ frame = lastFrame; }
-      else if (mode === 'demo'){ frame = XP.demoFrame(t); }
+      else if (mode === 'demo'){ frame = XP.demoFrame(t, W, H); }
       else if (mode === 'camera'){ frame = readCamera(); }
       if (frame) lastFrame = frame;
-
-      const W = bonesCv.width, H = bonesCv.height;
       if (mode === 'camera' && !frame){
         if (!noBodySince) noBodySince = performance.now();
         else if (performance.now() - noBodySince > 800) setPill('No body found', false);
@@ -243,7 +242,8 @@ window.XRAPP = (() => {
         if (frame){
           let y0 = 1, y1 = 0;
           for (const p of frame.img){ if (p[2] > 0.4){ y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); } }
-          if (y1 - y0 > 0.92) setPill('Step back', false);
+          // step-back hint: tracked body taller than 92% of frame (never demo)
+          if (mode === 'camera' && y1 - y0 > 0.92) setPill('Step back', false);
           else if (!loading) setPill('', false);
         }
       }

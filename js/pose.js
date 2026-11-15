@@ -180,8 +180,9 @@ const XP = (() => {
       spine: (f) => { const s = mid(px, 11, 12), g = mid(px, 23, 24);
         return XU.add(g, XU.scale(XU.sub(s, g), f)); } };
 
-    // torso scale: px per model unit
-    const restTorso = XU.len(XU.sub(J.c7t1, J.l5s1));
+    // torso scale: px per model unit (same landmark pair as the tracked
+    // shoulder-mid / hip-mid distance, so u matches the landmark scale)
+    const restTorso = XU.len(XU.sub(rMid('shoulder_L', 'shoulder_R'), rMid('hip_L', 'hip_R')));
     const pxTorso = XU.len(XU.sub(h.shM(), h.hpM()));
     const u = pxTorso / restTorso;
 
@@ -271,7 +272,7 @@ const XP = (() => {
       }
     }
 
-    return { seg, mainMats, mainOK, selBoneName, u, W, H };
+    return { seg, mainMats, mainOK, selBoneName, u, pPerM, W, H };
   }
 
   function applySeg(pose, name, p){
@@ -286,55 +287,57 @@ const XP = (() => {
   function reset(){ prevPx = null; prevHand = { left: null, right: null }; }
 
   // ---------- demo pose generator ----------
-  // Works in model units treated as metres (model is ~1.7 units tall), then
-  // maps to normalised image coords so it feeds the same solver.
-  function demoFrame(t){
-    const world = []; const img = [];
-    const Y0 = -1.60, HH = 1.72; // imgY = (y - Y0)/HH
-    const P3 = (x, y, z) => [x, y, z];
+  // Built from the SKEL rest joints (model units), rotating limb chains
+  // rigidly around their pivots, so bone lengths match the meshes exactly.
+  // Framing: the whole body (head top y=-1.64 .. feet y=+0.047) occupies
+  // 6%..94% of the canvas height, portrait or landscape, because the
+  // normalised y mapping (y - Y0)/HH and the solver scale u = H/HH agree.
+  function demoFrame(t, W, H){
+    const Jw = window.SKEL.joints;
+    const rot = (p, piv, ax, ang) => {   // rotate p around pivot, Rodrigues
+      const a = XU.norm(ax), c = Math.cos(ang), s = Math.sin(ang);
+      const d = XU.sub(p, piv);
+      return XU.add(piv, XU.add(
+        XU.add(XU.scale(d, c), XU.scale(XU.cross(a, d), s)),
+        XU.scale(a, XU.dot(a, d) * (1 - c))));
+    };
     const sway = 0.018 * Math.sin(t * 0.6);
     const bob = 0.008 * Math.sin(t * 2.1);
-    const breathe = 0.012 * (0.5 + 0.5 * Math.sin(t * 2.1));
-    const push = (x, y, z, idx) => { world[idx] = P3(x + sway, y + bob, z); };
-    // head / ears / nose
-    push(0.071, -1.509, -0.087 - breathe, 7);
-    push(-0.073, -1.509, -0.087 - breathe, 8);
-    push(0.0, -1.477, -0.214 - breathe * 2, 0);
-    // shoulders / chest
-    const shL = [0.166, -1.317, -0.08 - breathe], shR = [-0.165, -1.315, -0.08 - breathe];
-    push(shL[0], shL[1], shL[2], 11); push(shR[0], shR[1], shR[2], 12);
-    // hips
-    push(0.081, -0.811, -0.078, 23); push(-0.083, -0.811, -0.078, 24);
-    // left arm relaxed with slight swing
-    const sw = 0.06 * Math.sin(t * 1.9);
-    const elL = [shL[0] + 0.035, shL[1] + 0.28, -0.06];
-    const wrL = [elL[0] + sw, elL[1] + 0.24, -0.03];
-    push(elL[0], elL[1], elL[2], 13); push(wrL[0], wrL[1], wrL[2], 15);
-    push(wrL[0] + 0.02 + sw, wrL[1] + 0.05, wrL[2], 19); // index
-    push(wrL[0] - 0.02, wrL[1] + 0.05, wrL[2], 17); // pinky
-    push(wrL[0], wrL[1] + 0.06, wrL[2] - 0.02, 21); // thumb
-    // right arm waves
-    const elR = [shR[0] - 0.20, shR[1] + 0.14, -0.05];
-    const a = 0.7 + 0.5 * Math.sin(t * 2.6);
-    const wrR = [elR[0] - 0.10, elR[1] - 0.26 * Math.cos(a) + 0.06, -0.04];
-    push(elR[0], elR[1], elR[2], 14); push(wrR[0], wrR[1], wrR[2], 16);
-    push(wrR[0] - 0.02, wrR[1] + 0.05, wrR[2], 20);
-    push(wrR[0] + 0.02, wrR[1] + 0.05, wrR[2], 18);
-    push(wrR[0], wrR[1] + 0.06, wrR[2] - 0.02, 22);
-    // legs with tiny knee flex
+    const breathe = -0.012 * (0.5 + 0.5 * Math.sin(t * 2.1)); // chest z
+
+    // left arm: relaxed, small forward/back swing around the shoulder
+    const swL = 0.09 * Math.sin(t * 1.9);
+    const armL = (p) => rot(p, Jw.shoulder_L, [1, 0, 0], swL);
+    // right arm: lifted out, forearm waves (rigid rotations, lengths kept)
+    const lift = 0.95, wave = 0.5 * Math.sin(t * 2.6);
+    const armR = (p) => rot(p, Jw.shoulder_R, [0, 0, 1], lift);
+    const elR = armR(Jw.elbow_R);
+    const foreR = (p) => rot(armR(p), elR, [0, 0, 1], wave);
+    // legs: tiny knee flex
     const kf = 0.02 * Math.sin(t * 1.9);
-    const knL = [0.075, -0.38 - kf, -0.076], anL = [0.071, 0.017 - kf * 0.5, -0.079];
-    push(knL[0], knL[1], knL[2], 25); push(anL[0], anL[1], anL[2], 27);
-    push(anL[0], anL[1] + 0.03, -0.035, 29); push(anL[0] + 0.045, anL[1] + 0.05, -0.22, 31);
-    const knR = [-0.075, -0.38 - kf, -0.076], anR = [-0.071, 0.017 - kf * 0.5, -0.079];
-    push(knR[0], knR[1], knR[2], 26); push(anR[0], anR[1], anR[2], 28);
-    push(anR[0], anR[1] + 0.03, -0.035, 30); push(anR[0] - 0.045, anR[1] + 0.05, -0.22, 32);
-    // fill any gaps with rest-ish copies
-    for (let i = 0; i < 33; i++) if (!world[i]) world[i] = [sway, Y0 + 0.4, -0.05];
-    for (let i = 0; i < 33; i++){
-      const w2 = world[i];
-      img[i] = [0.5 + w2[0] * 0.27, (w2[1] - Y0) / HH, 1.0];
-    }
+    const shinL = (p) => rot(p, Jw.knee_L, [1, 0, 0], kf);
+    const shinR = (p) => rot(p, Jw.knee_R, [1, 0, 0], kf);
+
+    const world = new Array(33);
+    const put = (i, p, br) => {
+      world[i] = [p[0] + sway, p[1] + bob, p[2] + (br ? breathe : 0)];
+    };
+    put(0, Jw.nose, true); put(7, Jw.ear_L, true); put(8, Jw.ear_R, true);
+    put(11, Jw.shoulder_L); put(12, Jw.shoulder_R);
+    put(13, armL(Jw.elbow_L)); put(15, armL(Jw.wrist_L));
+    put(19, armL(Jw.mc2_L)); put(17, armL(Jw.mc5_L)); put(21, armL(Jw.mc1_L_a));
+    put(14, elR); put(16, foreR(Jw.wrist_R));
+    put(20, foreR(Jw.mc2_R)); put(18, foreR(Jw.mc5_R)); put(22, foreR(Jw.mc1_R_a));
+    put(23, Jw.hip_L); put(24, Jw.hip_R);
+    put(25, Jw.knee_L); put(27, shinL(Jw.ankle_L));
+    put(29, shinL(Jw.heel_L)); put(31, shinL(Jw.toe_L));
+    put(26, Jw.knee_R); put(28, shinR(Jw.ankle_R));
+    put(30, shinR(Jw.heel_R)); put(32, shinR(Jw.toe_R));
+    for (let i = 0; i < 33; i++) if (!world[i]) world[i] = [0, -1.0, -0.05];
+
+    const HH = 1.9171, Y0 = -1.7550;   // 1.687-unit body span -> 88% of height
+    const u = H / HH;                  // px per model unit (matches solver)
+    const img = world.map((p) => [0.5 + p[0] * u / W, (p[1] - Y0) / HH, 1.0]);
     return { img, world, hands: {} };
   }
 
