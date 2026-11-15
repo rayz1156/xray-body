@@ -44,33 +44,37 @@ const XL = (() => {
     ctx.font = `${fs}px system-ui, sans-serif`;
     ctx.lineWidth = Math.max(1, dpr * 0.8);
     const placed = [];
+    const seen = new Set();       // Main level: one label per id (side-aware)
 
-    const tryPlace = (ax, ay, id) => {
-      const w = ctx.measureText(PARTS[id] ? PARTS[id][0] : id).width;
+    // candidate boxes: both directions, growing offsets and vertical shifts,
+    // kept inside the canvas; first non-overlapping box wins.
+    const tryPlace = (ax, ay, txt) => {
+      const w = ctx.measureText(txt).width;
       const h = fs * 1.25;
-      const cands = [];
-      const dir = ax > W * 0.5 ? -1 : 1;
-      // text x anchored: if dir>0 text starts at ax+18*dpr; if dir<0 ends at ax-18*dpr
-      const candList = [];
-      for (const dy of [ -h*0.8, 0, h*0.8 ]){
-        candList.push(dir > 0
-          ? { x: ax + 18 * dpr, y: ay + dy - h/2 }
-          : { x: ax - 18 * dpr - w, y: ay + dy - h/2 });
-      }
-      for (const c of candList){
-        const hit = placed.some((p) => !(c.x + w + 4 < p.x || c.x > p.x + p.w ||
-                    c.y + h + 3 < p.y || c.y > p.y + p.h));
-        if (!hit){
-          placed.push({ x: c.x, y: c.y, w, h });
-          return { ...c, w, h };
+      const dir0 = ax > W * 0.5 ? -1 : 1;
+      for (const off of [18, 30, 44]){
+        for (const dy of [0, -h * 0.9, h * 0.9, -h * 1.9, h * 1.9]){
+          for (const dir of [dir0, -dir0]){
+            const c = dir > 0
+              ? { x: ax + off * dpr, y: ay + dy - h / 2 }
+              : { x: ax - off * dpr - w, y: ay + dy - h / 2 };
+            if (c.x < 2 || c.y < 2 || c.x + w > W - 2 || c.y + h > H - 2) continue;
+            const hit = placed.some((p) => !(c.x + w + 6 < p.x || c.x - 6 > p.x + p.w ||
+                        c.y + h + 4 < p.y || c.y - 4 > p.y + p.h));
+            if (!hit){
+              placed.push({ x: c.x, y: c.y, w, h });
+              return { ...c, w, h };
+            }
+          }
         }
       }
       return null;
     };
 
-    const drawLabel = (ax, ay, id) => {
-      const box = tryPlace(ax, ay, id);
-      const sel = id === selected;
+    const drawLabel = (ax, ay, L) => {
+      const txt = labelText(L);
+      const box = tryPlace(ax, ay, txt);
+      const sel = L.id === selected;
       ctx.strokeStyle = sel ? '#ffd166' : 'rgba(223,241,255,0.55)';
       ctx.fillStyle = sel ? '#ffd166' : '#dff1ff';
       ctx.globalAlpha = st.look === 'xray' ? 0.95 : 0.9;
@@ -84,10 +88,19 @@ const XL = (() => {
         ctx.moveTo(ax, ay);
         ctx.lineTo(tx, ty);
         ctx.stroke();
-        ctx.fillText(PARTS[id] ? PARTS[id][0] : id, box.x, box.y + fs);
-        boxes.push({ x: box.x, y: box.y, w: box.w, h: box.h + 8, id });
+        ctx.fillText(txt, box.x, box.y + fs);
+        boxes.push({ x: box.x, y: box.y, w: box.w, h: box.h + 8, id: L.id });
       }
       ctx.globalAlpha = 1;
+    };
+
+    const once = (L) => {           // Main level: skip repeat ids per side/pair
+      if (st.names !== 1) return true;
+      const s = L.seg || '';
+      const key = (s.endsWith('_L') || s.endsWith('_R')) ? `${L.id}:${s.slice(-1)}` : L.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
     };
 
     // SKEL labels
@@ -98,7 +111,8 @@ const XL = (() => {
         if (!s || !s.visible) continue;
         const p = XP.applySeg(pose, L.seg, L.p);
         if (!p) continue;
-        drawLabel(p[0], p[1], L.id);
+        if (!once(L)) continue;
+        drawLabel(p[0], p[1], L);
       }
     }
     // SOFT labels
@@ -114,12 +128,42 @@ const XL = (() => {
         if (!s || !s.visible) continue;
         const p = XP.applyMain(pose, L.seg, L.p);
         if (!p) continue;
-        drawLabel(p[0], p[1], L.id);
+        if (!once(L)) continue;
+        drawLabel(p[0], p[1], L);
       }
     }
   }
 
   function setSelected(id){ selected = id; }
 
-  return { init, draw, setSelected };
+  // paired bones: same id labelled on an _L and an _R segment
+  const PAIRED = (() => {
+    const m = new Map();
+    const scan = (arr) => {
+      if (!arr) return;
+      for (const L of arr){
+        const s = L.seg || '';
+        const suf = s.endsWith('_L') ? 'L' : (s.endsWith('_R') ? 'R' : '');
+        if (!suf) continue;
+        const e = m.get(L.id) || {};
+        e[suf] = 1; m.set(L.id, e);
+      }
+    };
+    scan(window.SKEL.labels); scan(window.SOFT ? window.SOFT.labels : null);
+    const out = new Set();
+    for (const [id, e] of m) if (e.L && e.R) out.add(id);
+    return out;
+  })();
+
+  function labelText(L){
+    const base = PARTS[L.id] ? PARTS[L.id][0] : L.id;
+    let side = '';
+    if (PAIRED.has(L.id)){
+      if (L.seg && L.seg.endsWith('_L')) side = 'Left ';
+      else if (L.seg && L.seg.endsWith('_R')) side = 'Right ';
+    }
+    return side + base;
+  }
+
+  return { init, draw, setSelected, PAIRED };
 })();
