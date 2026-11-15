@@ -1,0 +1,335 @@
+# Data index (generated from data/*.js metadata)
+
+## SKEL
+
+ids: frontal, parietal, temporal, occipital, sphenoid, nasal, zygomatic, maxilla, mandible, teeth, hyoid, cervical, thoracic, lumbar, sacrum, clavicle, scapula, manubrium, sternum, xiphoid, trueribs, falseribs, floatribs, cartilage, humerus, radius, ulna, carpals, metacarpals, phalanges, hipbone, femur, patella, tibia, fibula, talus, calcaneus, tarsals, metatarsals, toes, cranium, ribs 
+
+segs (name: [vertStart, vertCount, idxStart, idxCount]):
+- clav_L: [0, 390, 0, 2289]
+- clav_R: [390, 378, 2289, 2229]
+- f_L_index_dist: [768, 204, 4518, 984]
+- f_L_index_midd: [972, 188, 5502, 918]
+- f_L_index_prox: [1160, 222, 6420, 1176]
+- f_L_little_dist: [1382, 154, 7596, 594]
+- f_L_little_prox: [1536, 164, 8190, 822]
+- f_L_middle_dist: [1700, 173, 9012, 798]
+- f_L_middle_midd: [1873, 637, 9810, 2934]
+- f_L_middle_prox: [2510, 175, 12744, 894]
+- f_L_ring_dist: [2685, 140, 13638, 588]
+- f_L_ring_prox: [2825, 205, 14226, 1128]
+- f_L_thumb_dist: [3030, 189, 15354, 810]
+- f_L_thumb_prox: [3219, 202, 16164, 1038]
+- f_R_index_dist: [3421, 188, 17202, 630]
+- f_R_index_midd: [3609, 190, 17832, 792]
+- f_R_index_prox: [3799, 226, 18624, 1158]
+- f_R_little_dist: [4025, 140, 19782, 564]
+- f_R_little_prox: [4165, 187, 20346, 942]
+- f_R_middle_dist: [4352, 143, 21288, 522]
+- f_R_middle_midd: [4495, 615, 21810, 2598]
+- f_R_middle_prox: [5110, 176, 24408, 888]
+- f_R_ring_dist: [5286, 114, 25296, 336]
+- f_R_ring_prox: [5400, 209, 25632, 1128]
+- f_R_thumb_dist: [5609, 187, 26760, 720]
+- f_R_thumb_prox: [5796, 197, 27480, 954]
+- fem_L: [5993, 730, 28434, 4320]
+- fem_R: [6723, 704, 32754, 4185]
+- foot_L: [7427, 6814, 36939, 34227]
+- foot_R: [14241, 6814, 71166, 32670]
+- fore_L: [21055, 566, 103836, 2832]
+- fore_R: [21621, 577, 106668, 2928]
+- head: [22198, 35869, 109596, 189600]
+- hum_L: [58067, 930, 299196, 5187]
+- hum_R: [58997, 1086, 304383, 5103]
+- lumbar: [60083, 4276, 309486, 22746]
+- mc1_L: [64359, 198, 332232, 1125]
+- mc1_R: [64557, 198, 333357, 1101]
+- neck: [64755, 5587, 334458, 25182]
+- palm_L: [70342, 2412, 359640, 12231]
+- palm_R: [72754, 2340, 371871, 11280]
+- pelvis: [75094, 2609, 383151, 14682]
+- scap_L: [77703, 3939, 397833, 23607]
+- scap_R: [81642, 3673, 421440, 21984]
+- shin_L: [85315, 1127, 443424, 6411]
+- shin_R: [86442, 1118, 449835, 6384]
+- thorax: [87560, 41816, 456219, 233160]
+
+joints (rest pose, model units, y down):
+- shoulder_L: [0.16592, -1.3174, -0.07959]
+- elbow_L: [0.20852, -1.03834, -0.06945]
+- radD_L: [0.26145, -0.81278, -0.11457]
+- ulnD_L: [0.23869, -0.81061, -0.11401]
+- wrist_L: [0.25007, -0.81169, -0.11429]
+- mc2_L: [0.28418, -0.72226, -0.137]
+- mc5_L: [0.22992, -0.7341, -0.13957]
+- mc1_L_a: [0.27651, -0.79261, -0.12868]
+- mc1_L_b: [0.30582, -0.76624, -0.14873]
+- f_L_thumb_prox_a: [0.30418, -0.76415, -0.14916]
+- f_L_thumb_prox_b: [0.31502, -0.73966, -0.16078]
+- f_L_thumb_dist_a: [0.31447, -0.74015, -0.16255]
+- f_L_thumb_dist_b: [0.32287, -0.72031, -0.1712]
+- f_L_index_prox_a: [0.28704, -0.72058, -0.13907]
+- f_L_index_prox_b: [0.29756, -0.68764, -0.1549]
+- f_L_index_midd_a: [0.29939, -0.68747, -0.1533]
+- f_L_index_midd_b: [0.30568, -0.67273, -0.17119]
+- f_L_index_dist_a: [0.30664, -0.67367, -0.17151]
+- f_L_index_dist_b: [0.30794, -0.66314, -0.18583]
+- f_L_middle_prox_a: [0.26544, -0.72155, -0.13866]
+- f_L_middle_prox_b: [0.27213, -0.68569, -0.16147]
+- f_L_middle_midd_a: [0.27259, -0.68441, -0.16022]
+- f_L_middle_midd_b: [0.27501, -0.66345, -0.17971]
+- f_L_middle_dist_a: [0.27631, -0.66349, -0.17946]
+- f_L_middle_dist_b: [0.27701, -0.65486, -0.19393]
+- f_L_ring_prox_a: [0.2479, -0.72673, -0.13999]
+- f_L_ring_prox_b: [0.24918, -0.69169, -0.15971]
+- f_L_ring_midd_a: [0.25003, -0.69107, -0.15972]
+- f_L_ring_midd_b: [0.25009, -0.67156, -0.17935]
+- f_L_ring_dist_a: [0.24835, -0.67082, -0.17961]
+- f_L_ring_dist_b: [0.24984, -0.66589, -0.19386]
+- f_L_little_prox_a: [0.2303, -0.73381, -0.14225]
+- f_L_little_prox_b: [0.22659, -0.70484, -0.15783]
+- f_L_little_midd_a: [0.22465, -0.70486, -0.15778]
+- f_L_little_midd_b: [0.22264, -0.68859, -0.17072]
+- f_L_little_dist_a: [0.2233, -0.68721, -0.1695]
+- f_L_little_dist_b: [0.22157, -0.67764, -0.18135]
+- hip_L: [0.08108, -0.81132, -0.07801]
+- knee_L: [0.07545, -0.37984, -0.07625]
+- ankle_L: [0.07081, 0.01659, -0.07948]
+- heel_L: [0.06336, 0.04596, -0.03523]
+- toe_L: [0.11551, 0.0661, -0.22477]
+- clavM_L: [0.01067, -1.3182, -0.13078]
+- clavL_L: [0.14113, -1.34989, -0.06982]
+- ear_L: [0.07135, -1.50937, -0.08687]
+- shoulder_R: [-0.16506, -1.31549, -0.08236]
+- elbow_R: [-0.20825, -1.03813, -0.06963]
+- radD_R: [-0.26332, -0.81199, -0.11517]
+- ulnD_R: [-0.23819, -0.81103, -0.11394]
+- wrist_R: [-0.25076, -0.81151, -0.11456]
+- mc2_R: [-0.28491, -0.72199, -0.1373]
+- mc5_R: [-0.23029, -0.73473, -0.14052]
+- mc1_R_a: [-0.27581, -0.79214, -0.13056]
+- mc1_R_b: [-0.30538, -0.7656, -0.14888]
+- f_R_thumb_prox_a: [-0.30398, -0.76426, -0.14979]
+- f_R_thumb_prox_b: [-0.31497, -0.73816, -0.15916]
+- f_R_thumb_dist_a: [-0.3136, -0.7403, -0.16263]
+- f_R_thumb_dist_b: [-0.3225, -0.72019, -0.17111]
+- f_R_index_prox_a: [-0.28737, -0.72071, -0.13815]
+- f_R_index_prox_b: [-0.29879, -0.68772, -0.15425]
+- f_R_index_midd_a: [-0.29959, -0.68713, -0.15341]
+- f_R_index_midd_b: [-0.3057, -0.6728, -0.17138]
+- f_R_index_dist_a: [-0.30592, -0.67388, -0.17154]
+- f_R_index_dist_b: [-0.30812, -0.66316, -0.1859]
+- f_R_middle_prox_a: [-0.26636, -0.72212, -0.13917]
+- f_R_middle_prox_b: [-0.27308, -0.68603, -0.16141]
+- f_R_middle_midd_a: [-0.2721, -0.68461, -0.16011]
+- f_R_middle_midd_b: [-0.27568, -0.66354, -0.17936]
+- f_R_middle_dist_a: [-0.27596, -0.66399, -0.17989]
+- f_R_middle_dist_b: [-0.2775, -0.65475, -0.19466]
+- f_R_ring_prox_a: [-0.24717, -0.72713, -0.14062]
+- f_R_ring_prox_b: [-0.24921, -0.69154, -0.15933]
+- f_R_ring_midd_a: [-0.24762, -0.69108, -0.1602]
+- f_R_ring_midd_b: [-0.25095, -0.67087, -0.17914]
+- f_R_ring_dist_a: [-0.24877, -0.6715, -0.17972]
+- f_R_ring_dist_b: [-0.25028, -0.66579, -0.19344]
+- f_R_little_prox_a: [-0.2309, -0.73417, -0.14305]
+- f_R_little_prox_b: [-0.22677, -0.70437, -0.15719]
+- f_R_little_midd_a: [-0.22596, -0.70448, -0.15722]
+- f_R_little_midd_b: [-0.22105, -0.68933, -0.17054]
+- f_R_little_dist_a: [-0.22392, -0.68787, -0.17021]
+- f_R_little_dist_b: [-0.22151, -0.67785, -0.18086]
+- hip_R: [-0.08287, -0.81079, -0.07777]
+- knee_R: [-0.07455, -0.3801, -0.076]
+- ankle_R: [-0.07101, 0.01659, -0.07885]
+- heel_R: [-0.06715, 0.04886, -0.03765]
+- toe_R: [-0.11513, 0.06605, -0.22455]
+- clavM_R: [-0.01246, -1.31967, -0.13055]
+- clavL_R: [-0.14305, -1.35082, -0.07179]
+- ear_R: [-0.07367, -1.50928, -0.08719]
+- nose: [0.0, -1.47717, -0.21417]
+- c1: [-0.00089, -1.47133, -0.06845]
+- c7t1: [-0.00076, -1.37048, -0.06336]
+- t12l1: [-0.00105, -1.06243, -0.05905]
+- l5s1: [-0.00053, -0.9273, -0.05069]
+- coccyx: [-0.00063, -0.78443, -0.01325]
+
+labels:
+- {"id": "cranium", "lvl": 1, "seg": "head", "p": [-0.04274, -1.61922, -0.06446]}
+- {"id": "frontal", "lvl": 2, "seg": "head", "p": [0.00148, -1.56339, -0.16884]}
+- {"id": "parietal", "lvl": 2, "seg": "head", "p": [0.04659, -1.61457, -0.07727]}
+- {"id": "temporal", "lvl": 2, "seg": "head", "p": [0.04923, -1.50814, -0.08644]}
+- {"id": "temporal", "lvl": 2, "seg": "head", "p": [-0.05514, -1.51558, -0.08933]}
+- {"id": "occipital", "lvl": 2, "seg": "head", "p": [0.0152, -1.50191, -0.07619]}
+- {"id": "sphenoid", "lvl": 2, "seg": "head", "p": [-0.00051, -1.5164, -0.1178]}
+- {"id": "nasal", "lvl": 2, "seg": "head", "p": [-0.00245, -1.51815, -0.18308]}
+- {"id": "zygomatic", "lvl": 2, "seg": "head", "p": [0.04529, -1.50679, -0.15095]}
+- {"id": "zygomatic", "lvl": 2, "seg": "head", "p": [-0.04658, -1.50448, -0.14462]}
+- {"id": "maxilla", "lvl": 2, "seg": "head", "p": [-0.01803, -1.48235, -0.16175]}
+- {"id": "mandible", "lvl": 1, "seg": "head", "p": [0.01876, -1.45055, -0.14373]}
+- {"id": "teeth", "lvl": 2, "seg": "head", "p": [-0.00533, -1.4636, -0.18143]}
+- {"id": "hyoid", "lvl": 2, "seg": "neck", "p": [-0.00083, -1.43167, -0.12352]}
+- {"id": "cervical", "lvl": 1, "seg": "neck", "p": [0.00239, -1.42659, -0.07394]}
+- {"id": "thoracic", "lvl": 1, "seg": "thorax", "p": [0.00245, -1.16604, -0.04288]}
+- {"id": "lumbar", "lvl": 1, "seg": "lumbar", "p": [-0.00217, -0.99216, -0.07998]}
+- {"id": "sacrum", "lvl": 1, "seg": "pelvis", "p": [0.01004, -0.87185, -0.0334]}
+- {"id": "manubrium", "lvl": 2, "seg": "thorax", "p": [0.00244, -1.30383, -0.16638]}
+- {"id": "sternum", "lvl": 1, "seg": "thorax", "p": [0.00866, -1.22257, -0.20103]}
+- {"id": "xiphoid", "lvl": 2, "seg": "thorax", "p": [0.00131, -1.17908, -0.21077]}
+- {"id": "ribs", "lvl": 1, "seg": "thorax", "p": [-0.11856, -1.23437, -0.09014]}
+- {"id": "trueribs", "lvl": 2, "seg": "thorax", "p": [0.08872, -1.2806, -0.12788]}
+- {"id": "falseribs", "lvl": 2, "seg": "thorax", "p": [0.096, -1.12283, -0.03412]}
+- {"id": "floatribs", "lvl": 2, "seg": "thorax", "p": [-0.07948, -1.06655, -0.0362]}
+- {"id": "cartilage", "lvl": 2, "seg": "thorax", "p": [-0.06102, -1.15919, -0.20413]}
+- {"id": "clavicle", "lvl": 1, "seg": "clav_L", "p": [0.07959, -1.33604, -0.09795]}
+- {"id": "scapula", "lvl": 1, "seg": "scap_L", "p": [0.11577, -1.29798, -0.04129]}
+- {"id": "humerus", "lvl": 1, "seg": "hum_L", "p": [0.18717, -1.17248, -0.07136]}
+- {"id": "radius", "lvl": 1, "seg": "fore_L", "p": [0.24335, -0.91513, -0.09174]}
+- {"id": "ulna", "lvl": 1, "seg": "fore_L", "p": [0.21862, -0.95503, -0.07938]}
+- {"id": "carpals", "lvl": 1, "seg": "palm_L", "p": [0.25326, -0.79169, -0.12417]}
+- {"id": "metacarpals", "lvl": 1, "seg": "palm_L", "p": [0.2604, -0.75283, -0.12877]}
+- {"id": "phalanges", "lvl": 1, "seg": "f_L_middle_prox", "p": [0.27268, -0.70215, -0.15162]}
+- {"id": "hipbone", "lvl": 1, "seg": "pelvis", "p": [0.06427, -0.84931, -0.07842]}
+- {"id": "femur", "lvl": 1, "seg": "fem_L", "p": [0.09642, -0.63865, -0.08128]}
+- {"id": "patella", "lvl": 1, "seg": "shin_L", "p": [0.07906, -0.38152, -0.12125]}
+- {"id": "tibia", "lvl": 1, "seg": "shin_L", "p": [0.06855, -0.22442, -0.08537]}
+- {"id": "fibula", "lvl": 1, "seg": "shin_L", "p": [0.10187, -0.16408, -0.06612]}
+- {"id": "talus", "lvl": 2, "seg": "foot_L", "p": [0.07488, 0.01968, -0.0837]}
+- {"id": "calcaneus", "lvl": 2, "seg": "foot_L", "p": [0.08103, 0.03249, -0.0732]}
+- {"id": "tarsals", "lvl": 1, "seg": "foot_L", "p": [0.07872, 0.01795, -0.10617]}
+- {"id": "metatarsals", "lvl": 1, "seg": "foot_L", "p": [0.11291, 0.04094, -0.14702]}
+- {"id": "toes", "lvl": 2, "seg": "foot_L", "p": [0.12441, 0.06208, -0.19848]}
+- {"id": "clavicle", "lvl": 1, "seg": "clav_R", "p": [-0.07508, -1.33504, -0.10546]}
+- {"id": "scapula", "lvl": 1, "seg": "scap_R", "p": [-0.12232, -1.30546, -0.05306]}
+- {"id": "humerus", "lvl": 1, "seg": "hum_R", "p": [-0.18279, -1.21535, -0.0771]}
+- {"id": "radius", "lvl": 1, "seg": "fore_R", "p": [-0.25565, -0.90118, -0.09604]}
+- {"id": "ulna", "lvl": 1, "seg": "fore_R", "p": [-0.22051, -0.95817, -0.0793]}
+- {"id": "carpals", "lvl": 1, "seg": "palm_R", "p": [-0.25332, -0.79153, -0.12341]}
+- {"id": "metacarpals", "lvl": 1, "seg": "palm_R", "p": [-0.26193, -0.76159, -0.12639]}
+- {"id": "phalanges", "lvl": 1, "seg": "f_R_middle_prox", "p": [-0.27229, -0.70287, -0.15123]}
+- {"id": "hipbone", "lvl": 1, "seg": "pelvis", "p": [-0.06551, -0.85506, -0.07565]}
+- {"id": "femur", "lvl": 1, "seg": "fem_R", "p": [-0.08735, -0.61011, -0.09217]}
+- {"id": "patella", "lvl": 1, "seg": "shin_R", "p": [-0.07822, -0.38245, -0.12147]}
+- {"id": "tibia", "lvl": 1, "seg": "shin_R", "p": [-0.06885, -0.22653, -0.08494]}
+- {"id": "fibula", "lvl": 1, "seg": "shin_R", "p": [-0.10324, -0.16554, -0.06641]}
+- {"id": "talus", "lvl": 2, "seg": "foot_R", "p": [-0.07037, 0.01881, -0.07817]}
+- {"id": "calcaneus", "lvl": 2, "seg": "foot_R", "p": [-0.07879, 0.03217, -0.07183]}
+- {"id": "tarsals", "lvl": 1, "seg": "foot_R", "p": [-0.07884, 0.01718, -0.1066]}
+- {"id": "metatarsals", "lvl": 1, "seg": "foot_R", "p": [-0.11401, 0.04382, -0.14625]}
+- {"id": "toes", "lvl": 2, "seg": "foot_R", "p": [-0.12196, 0.06157, -0.19902]}
+
+qc [1.0500000000024379e-05, -0.7829492667147422, -0.10916050519486713] qs 0.8542825958814568 vBytes 1552512 verts 129376 indices 689379
+
+## SOFT
+
+ids: brain, cerebellum, brainstem, eye, trachea, lungs, heart, esophagus, stomach, liver, gallbladder, pancreas, spleen, kidney, adrenal, ureter, smallint, largeint, bladder, artery, aorta, carotid, subclavian, brachial, radial, ulnar, renal, iliac, femoralA, popliteal, tibial, coronary, vein, venacava, jugular, femoralV, saphenous, armveins, portal, pulmArt, pulmVein
+
+main (matrix slots): ['head', 'neck', 'thorax', 'lumbar', 'pelvis', 'hum_L', 'fore_L', 'palm_L', 'fem_L', 'shin_L', 'foot_L', 'hum_R', 'fore_R', 'palm_R', 'fem_R', 'shin_R', 'foot_R']
+
+chunks [group, vStart, vCount, iStart, iCount]:
+- ['organs', 0, 65045, 0, 332388]
+- ['organs', 65045, 23027, 332388, 123558]
+- ['heart', 88072, 9435, 455946, 48105]
+- ['vessels', 97507, 64750, 504051, 345360]
+- ['vessels', 162257, 65531, 849411, 330534]
+- ['vessels', 227788, 12528, 1179945, 66243]
+
+pal [r,g,b,kind] kind 0 organ 1 artery 2 vein 3 heart:
+- brain: [0.96, 0.72, 0.76, 0]
+- cerebellum: [0.92, 0.58, 0.66, 0]
+- brainstem: [0.88, 0.78, 0.62, 0]
+- eye: [0.88, 0.94, 1, 0]
+- trachea: [0.6, 0.86, 0.96, 0]
+- lungs: [0.52, 0.8, 0.96, 0]
+- heart: [0.92, 0.22, 0.24, 3]
+- esophagus: [0.86, 0.6, 0.5, 0]
+- stomach: [0.96, 0.64, 0.56, 0]
+- liver: [0.66, 0.3, 0.22, 0]
+- gallbladder: [0.42, 0.76, 0.34, 0]
+- pancreas: [0.96, 0.82, 0.44, 0]
+- spleen: [0.62, 0.3, 0.52, 0]
+- kidney: [0.78, 0.4, 0.3, 0]
+- adrenal: [0.96, 0.76, 0.3, 0]
+- ureter: [0.92, 0.86, 0.5, 0]
+- smallint: [0.96, 0.7, 0.62, 0]
+- largeint: [0.8, 0.54, 0.44, 0]
+- bladder: [0.96, 0.86, 0.4, 0]
+- artery: [0.96, 0.2, 0.18, 1]
+- aorta: [0.96, 0.2, 0.18, 1]
+- carotid: [0.96, 0.2, 0.18, 1]
+- subclavian: [0.96, 0.2, 0.18, 1]
+- brachial: [0.96, 0.2, 0.18, 1]
+- radial: [0.96, 0.2, 0.18, 1]
+- ulnar: [0.96, 0.2, 0.18, 1]
+- renal: [0.96, 0.2, 0.18, 1]
+- iliac: [0.96, 0.2, 0.18, 1]
+- femoralA: [0.96, 0.2, 0.18, 1]
+- popliteal: [0.96, 0.2, 0.18, 1]
+- tibial: [0.96, 0.2, 0.18, 1]
+- coronary: [0.96, 0.2, 0.18, 1]
+- vein: [0.26, 0.46, 0.98, 2]
+- venacava: [0.26, 0.46, 0.98, 2]
+- jugular: [0.26, 0.46, 0.98, 2]
+- femoralV: [0.26, 0.46, 0.98, 2]
+- saphenous: [0.26, 0.46, 0.98, 2]
+- armveins: [0.26, 0.46, 0.98, 2]
+- portal: [0.26, 0.46, 0.98, 2]
+- pulmArt: [0.26, 0.46, 0.98, 1]
+- pulmVein: [0.96, 0.2, 0.18, 2]
+
+labels:
+- {"id": "brain", "grp": "organs", "lvl": 1, "seg": 0, "p": [0.02915, -1.59375, -0.12211]}
+- {"id": "cerebellum", "grp": "organs", "lvl": 2, "seg": 0, "p": [0.01038, -1.51507, -0.06274]}
+- {"id": "brainstem", "grp": "organs", "lvl": 2, "seg": 0, "p": [0.00882, -1.51379, -0.09061]}
+- {"id": "eye", "grp": "organs", "lvl": 2, "seg": 0, "p": [0.03636, -1.52005, -0.16134]}
+- {"id": "trachea", "grp": "organs", "lvl": 1, "seg": 2, "p": [-0.00043, -1.3418, -0.10205]}
+- {"id": "lungs", "grp": "organs", "lvl": 1, "seg": 2, "p": [-0.0264, -1.26321, -0.0849]}
+- {"id": "heart", "grp": "heart", "lvl": 1, "seg": 2, "p": [0.03427, -1.22167, -0.13553]}
+- {"id": "esophagus", "grp": "organs", "lvl": 2, "seg": 2, "p": [-0.00512, -1.23478, -0.07631]}
+- {"id": "stomach", "grp": "organs", "lvl": 1, "seg": 2, "p": [0.02424, -1.10843, -0.14969]}
+- {"id": "liver", "grp": "organs", "lvl": 1, "seg": 2, "p": [-0.07608, -1.13507, -0.11397]}
+- {"id": "gallbladder", "grp": "organs", "lvl": 2, "seg": 2, "p": [-0.04135, -1.07149, -0.16545]}
+- {"id": "pancreas", "grp": "organs", "lvl": 2, "seg": 3, "p": [0.00946, -1.04787, -0.12477]}
+- {"id": "spleen", "grp": "organs", "lvl": 1, "seg": 2, "p": [0.08564, -1.08189, -0.09418]}
+- {"id": "kidney", "grp": "organs", "lvl": 1, "seg": 3, "p": [0.06186, -1.03756, -0.08237]}
+- {"id": "kidney", "grp": "organs", "lvl": 1, "seg": 3, "p": [-0.05458, -1.02009, -0.09604]}
+- {"id": "adrenal", "grp": "organs", "lvl": 2, "seg": 2, "p": [0.04958, -1.084, -0.07727]}
+- {"id": "ureter", "grp": "organs", "lvl": 2, "seg": 3, "p": [-0.04966, -0.98559, -0.09452]}
+- {"id": "smallint", "grp": "organs", "lvl": 1, "seg": 4, "p": [0.06701, -0.8556, -0.1581]}
+- {"id": "largeint", "grp": "organs", "lvl": 1, "seg": 4, "p": [0.07303, -0.93684, -0.11369]}
+- {"id": "largeint", "grp": "organs", "lvl": 2, "seg": 4, "p": [-0.08783, -0.96305, -0.12741]}
+- {"id": "bladder", "grp": "organs", "lvl": 1, "seg": 4, "p": [-0.01152, -0.81412, -0.11344]}
+- {"id": "aorta", "grp": "vessels", "lvl": 1, "seg": 2, "p": [0.00884, -1.296, -0.1022]}
+- {"id": "aorta", "grp": "vessels", "lvl": 2, "seg": 3, "p": [0.0159, -1.0493, -0.11226]}
+- {"id": "venacava", "grp": "vessels", "lvl": 1, "seg": 2, "p": [-0.00848, -1.27794, -0.1244]}
+- {"id": "venacava", "grp": "vessels", "lvl": 2, "seg": 2, "p": [-0.01733, -1.16087, -0.1262]}
+- {"id": "pulmArt", "grp": "vessels", "lvl": 1, "seg": 2, "p": [0.02705, -1.27399, -0.15195]}
+- {"id": "coronary", "grp": "vessels", "lvl": 2, "seg": 2, "p": [0.03111, -1.25577, -0.12284]}
+- {"id": "portal", "grp": "vessels", "lvl": 2, "seg": 3, "p": [-0.01457, -1.08544, -0.13721]}
+- {"id": "carotid", "grp": "vessels", "lvl": 1, "seg": 2, "p": [0.01571, -1.33673, -0.10642]}
+- {"id": "jugular", "grp": "vessels", "lvl": 1, "seg": 1, "p": [0.02477, -1.37059, -0.12074]}
+- {"id": "subclavian", "grp": "vessels", "lvl": 2, "seg": 2, "p": [0.06153, -1.34335, -0.09816]}
+- {"id": "brachial", "grp": "vessels", "lvl": 1, "seg": 5, "p": [0.18161, -1.15774, -0.0803]}
+- {"id": "radial", "grp": "vessels", "lvl": 1, "seg": 6, "p": [0.25968, -0.89496, -0.09381]}
+- {"id": "ulnar", "grp": "vessels", "lvl": 2, "seg": 6, "p": [0.21707, -0.91674, -0.10369]}
+- {"id": "armveins", "grp": "vessels", "lvl": 2, "seg": 5, "p": [0.2263, -1.10258, -0.08874]}
+- {"id": "renal", "grp": "vessels", "lvl": 2, "seg": 3, "p": [0.02366, -1.04478, -0.11372]}
+- {"id": "iliac", "grp": "vessels", "lvl": 2, "seg": 3, "p": [0.02292, -0.91485, -0.10612]}
+- {"id": "femoralA", "grp": "vessels", "lvl": 1, "seg": 8, "p": [0.04779, -0.66133, -0.13843]}
+- {"id": "femoralV", "grp": "vessels", "lvl": 2, "seg": 8, "p": [0.04125, -0.63916, -0.12491]}
+- {"id": "saphenous", "grp": "vessels", "lvl": 1, "seg": 9, "p": [0.03437, -0.36299, -0.05604]}
+- {"id": "popliteal", "grp": "vessels", "lvl": 2, "seg": 8, "p": [0.07425, -0.39092, -0.0621]}
+- {"id": "tibial", "grp": "vessels", "lvl": 1, "seg": 9, "p": [0.09009, -0.17451, -0.09089]}
+- {"id": "carotid", "grp": "vessels", "lvl": 1, "seg": 2, "p": [-0.01341, -1.34882, -0.11431]}
+- {"id": "jugular", "grp": "vessels", "lvl": 1, "seg": 1, "p": [-0.02855, -1.37915, -0.11915]}
+- {"id": "subclavian", "grp": "vessels", "lvl": 2, "seg": 2, "p": [-0.04076, -1.34584, -0.10099]}
+- {"id": "brachial", "grp": "vessels", "lvl": 1, "seg": 11, "p": [-0.18001, -1.15765, -0.07979]}
+- {"id": "radial", "grp": "vessels", "lvl": 1, "seg": 12, "p": [-0.26071, -0.88936, -0.09622]}
+- {"id": "ulnar", "grp": "vessels", "lvl": 2, "seg": 12, "p": [-0.21789, -0.9163, -0.10225]}
+- {"id": "armveins", "grp": "vessels", "lvl": 2, "seg": 11, "p": [-0.22335, -1.14157, -0.08435]}
+- {"id": "renal", "grp": "vessels", "lvl": 2, "seg": 3, "p": [-0.01222, -1.0331, -0.10744]}
+- {"id": "iliac", "grp": "vessels", "lvl": 2, "seg": 3, "p": [-0.01094, -0.94057, -0.11926]}
+- {"id": "femoralA", "grp": "vessels", "lvl": 1, "seg": 14, "p": [-0.0502, -0.67294, -0.13353]}
+- {"id": "femoralV", "grp": "vessels", "lvl": 2, "seg": 14, "p": [-0.0335, -0.6824, -0.12864]}
+- {"id": "saphenous", "grp": "vessels", "lvl": 1, "seg": 14, "p": [-0.0251, -0.42136, -0.05628]}
+- {"id": "popliteal", "grp": "vessels", "lvl": 2, "seg": 14, "p": [-0.07491, -0.38135, -0.06176]}
+- {"id": "tibial", "grp": "vessels", "lvl": 1, "seg": 15, "p": [-0.09029, -0.20397, -0.09314]}
+
+heart [0.0343, -1.2246, -0.1343] qc [4.7750771045684814e-05, -0.7791493303136611, -0.10681479025092347] qs 0.8526496468195952 vBytes 3845056
