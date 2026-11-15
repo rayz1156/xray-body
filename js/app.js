@@ -259,9 +259,14 @@ window.XRAPP = (() => {
     }
   }
 
-  // ?demo=1 autostart
+  // ?demo=1 autostart (extra params: organs / circ pre-enable layers for testing)
   begin();
-  if (new URLSearchParams(location.search).get('demo') === '1'){
+  const params = new URLSearchParams(location.search);
+  if (params.get('demo') === '1'){
+    if (params.get('organs')) { XU.set({ layerOrg: true, layerSkel: false }); Object.assign(st, XU.get()); $('tabOrg').classList.add('on'); $('tabSkel').classList.remove('on'); ensureSoft(); }
+    if (params.get('circ')) { XU.set({ layerCirc: true, layerSkel: false }); Object.assign(st, XU.get()); $('tabCirc').classList.add('on'); $('tabSkel').classList.remove('on'); ensureSoft(); }
+    if (params.get('look')) { XU.set({ look: params.get('look') }); Object.assign(st, XU.get());
+      $('xrayBtn').classList.toggle('on', st.look === 'xray'); $('solidBtn').classList.toggle('on', st.look === 'solid'); }
     startDemo();
   } else {
     loading = true;

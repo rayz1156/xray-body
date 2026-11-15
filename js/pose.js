@@ -194,10 +194,12 @@ const XP = (() => {
 
     for (const name in CFG){
       const c = CFG[name](h);
+      const val = (x) => (typeof x === 'function' ? x() : x);
       const show = core && vis(c.vis);
-      const Rm = XU.frameMat(XU.frame(XU.sub(c.axR[1], c.axR[0]), XU.sub(c.hintR[1], c.hintR[0])),
-                             XU.frame(XU.sub(c.axT[1](), c.axT[0]()), XU.sub(c.hintT[1](), c.hintT[0]())));
-      seg[name] = { m: segMat(Rm, u, c.pivR, c.pivT(), mirror, W),
+      const Rm = XU.frameMat(
+        XU.frame(XU.sub(c.axR[1], c.axR[0]), XU.sub(c.hintR[1], c.hintR[0])),
+        XU.frame(XU.sub(val(c.axT[1]), val(c.axT[0])), XU.sub(val(c.hintT[1]), val(c.hintT[0]))));
+      seg[name] = { m: segMat(Rm, u, c.pivR, val(c.pivT), mirror, W),
                     n: norm3m(Rm), visible: show, R: Rm, pivR: c.pivR, u };
     }
 

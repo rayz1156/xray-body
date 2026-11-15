@@ -247,7 +247,7 @@ const XR = (() => {
     gl.useProgram(progBones);
     gl.uniform2f(U(progBones, 'uView'), w, h);
     gl.uniform1f(U(progBones, 'uZScale'), 2.4 / Math.max(w, h));
-    gl.uniform3fv(U(progBones, 'uQs'), window.SKEL.qs);
+    gl.uniform3fv(U(progBones, 'uQs'), new Float32Array([window.SKEL.qs, window.SKEL.qs, window.SKEL.qs]));
     gl.uniform3fv(U(progBones, 'uQc'), window.SKEL.qc);
     gl.uniform1f(U(progBones, 'uMode'), xray ? 0 : 1);
     gl.uniform1f(U(progBones, 'uBright'), bright);
@@ -274,7 +274,7 @@ const XR = (() => {
     gl.useProgram(progSoft);
     gl.uniform2f(U(progSoft, 'uView'), w, h);
     gl.uniform1f(U(progSoft, 'uZScale'), 2.4 / Math.max(w, h));
-    gl.uniform3fv(U(progSoft, 'uQs'), window.SOFT.qs);
+    gl.uniform3fv(U(progSoft, 'uQs'), new Float32Array([window.SOFT.qs, window.SOFT.qs, window.SOFT.qs]));
     gl.uniform3fv(U(progSoft, 'uQc'), window.SOFT.qc);
     gl.uniform1f(U(progSoft, 'uMode'), xray ? 0 : 1);
     gl.uniform1f(U(progSoft, 'uBright'), bright);
