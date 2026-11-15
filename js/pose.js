@@ -240,19 +240,21 @@ const XP = (() => {
         }
       } else {
         prevHand[side] = null;
-        // fingers keep rest pose relative to the palm segment
+        // no hand data: every finger segment (incl. thumb metacarpal) reuses
+        // the palm matrix unchanged, so fingers stay attached in rest pose.
         const pm = seg[palmName];
         if (pm && pm.visible){
+          const extras = { mc1: J['mc1_' + side + '_a'] };
           for (const fing in PHAL){
             const defs = PHAL[fing];
             for (const stg in defs){
-              const name2 = `f_${side}_${fing}_${stg}`;
-              if (!window.SKEL.segs[name2]) continue;
-              const rA = J[defs[stg][0]];
-              const pA = applyM(pm.m, rA);
-              seg[name2] = { m: segMat(pm.R, pm.u, rA, pA, mirror, W),
-                             n: norm3m(pm.R), visible: true };
+              extras[`${fing}_${stg}`] = J[defs[stg][0]];
             }
+          }
+          for (const key in extras){
+            const name2 = key === 'mc1' ? 'mc1_' + side : `f_${side}_${key}`;
+            if (!window.SKEL.segs[name2]) continue;
+            seg[name2] = { m: pm.m, n: norm3m(pm.R), visible: true, pivR: extras[key] };
           }
         }
       }
