@@ -1,0 +1,20 @@
+/* Bundled fonts (SIL Open Font License 1.1; licence texts in assets/fonts/).
+   A face is only downloaded when an edition actually uses it. */
+@font-face{font-family:"Fredoka";font-style:normal;font-weight:300 700;font-display:swap;
+  src:url(../assets/fonts/fredoka-latin-wght-normal.woff2) format("woff2");}
+@font-face{font-family:"Nunito";font-style:normal;font-weight:200 1000;font-display:swap;
+  src:url(../assets/fonts/nunito-latin-wght-normal.woff2) format("woff2");}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400;font-display:swap;
+  src:url(../assets/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:500;font-display:swap;
+  src:url(../assets/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:600;font-display:swap;
+  src:url(../assets/fonts/ibm-plex-sans-latin-600-normal.woff2) format("woff2");}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:700;font-display:swap;
+  src:url(../assets/fonts/ibm-plex-sans-latin-700-normal.woff2) format("woff2");}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;
+  src:url(../assets/fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2");}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:500;font-display:swap;
+  src:url(../assets/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:600;font-display:swap;
+  src:url(../assets/fonts/ibm-plex-mono-latin-600-normal.woff2) format("woff2");}

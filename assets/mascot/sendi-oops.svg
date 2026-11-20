@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sendi the skeleton kid: oops" fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <!-- Sendi, kids edition mascot (oops). Groups, pivots and animation tips: notes.md -->
+ <defs>
+  <linearGradient id="m-bone" x1="0" y1="0" x2="0" y2="1"><stop offset="0.4" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E6DEFF"/></linearGradient>
+  <linearGradient id="m-bone-arm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E6DEFF"/><stop offset="0.55" stop-color="#FFFFFF"/></linearGradient>
+ </defs>
+ <ellipse id="m-shadow" cx="256" cy="486" rx="104" ry="12" fill="#2A2156" opacity="0.2"/>
+ <g id="m-figure">
+  <g id="m-legs">
+   <g id="m-leg-l"><path d="M211 400 A17 17 0 0 1 245 400 L245 446 A31 19 0 1 1 211 440Z" fill="url(#m-bone)" stroke="#2A2156" stroke-width="10"/></g>
+   <g id="m-leg-r"><path d="M267 400 A17 17 0 0 1 301 400 L301 440 A31 19 0 1 1 267 446Z" fill="url(#m-bone)" stroke="#2A2156" stroke-width="10"/></g>
+  </g>
+  <g id="m-upper" transform="rotate(2 256 400)">
+   <g id="m-body">
+    <path d="M256 292 C288 292 306 304 308 328 C314 364 308 404 256 404 C204 404 198 364 204 328 C206 304 224 292 256 292Z" fill="url(#m-bone)" stroke="#2A2156" stroke-width="10"/>
+    <path id="m-ribs" d="M213 336 Q225 345 236 342 M210 356 Q223 365 235 362 M213 376 Q225 384 238 381 M299 336 Q287 345 276 342 M302 356 Q289 365 277 362 M299 376 Q287 384 274 381" stroke="#CFC3FF" stroke-width="8"/>
+    <path id="m-heart" d="M256 369 C248 362 239 355 239 346 C239 337 250 333 256 342 C262 333 273 337 273 346 C273 355 264 362 256 369Z" fill="#FF8FAB"/>
+   </g>
+   <g id="m-scarf">
+    <g id="m-scarf-tail" transform="rotate(16 372 238)">
+     <path d="M366 224 C394 208 420 240 462 220 L450 246 L472 268 C432 288 402 256 368 260Z" fill="#FFC738" stroke="#2A2156" stroke-width="10"/>
+     <path d="M414 230 Q422 232 430 232 L432 269 Q425 268 418 265Z" fill="#FF9438"/>
+    </g>
+    <path d="M162 246 C152 296 212 310 256 310 C300 310 360 296 350 246 C330 232 182 232 162 246Z" fill="#FFC738" stroke="#2A2156" stroke-width="10"/>
+    <ellipse cx="372" cy="238" rx="13" ry="11.5" transform="rotate(-24 372 238)" fill="#FFC738" stroke="#2A2156" stroke-width="10"/>
+   </g>
+   <g id="m-head" transform="rotate(-6 256 272)">
+    <path id="m-skull" d="M256 18 C342 18 406 70 406 140 C406 184 390 212 366 226 C358 231 354 239 352 248 C349 262 330 272 300 272 C286 272 270 274 256 274 C242 274 226 272 212 272 C182 272 163 262 160 248 C158 239 154 231 146 226 C122 212 106 184 106 140 C106 70 170 18 256 18Z" fill="url(#m-bone)" stroke="#2A2156" stroke-width="10"/>
+    <g id="m-eye-l">
+     <ellipse cx="194" cy="164" rx="38" ry="41" fill="#CFC3FF"/>
+     <g id="m-pupil-l">
+      <path id="m-eye-shut-l" d="M173 177 Q194 149 215 177" stroke="#2A2156" stroke-width="11"/>
+     </g>
+    </g>
+    <g id="m-eye-r">
+     <ellipse cx="318" cy="164" rx="38" ry="41" fill="#CFC3FF"/>
+     <g id="m-pupil-r">
+      <path id="m-eye-shut-r" d="M297 177 Q318 149 339 177" stroke="#2A2156" stroke-width="11"/>
+     </g>
+    </g>
+    <g id="m-cheeks" fill="#FF8FAB" opacity="0.85"><ellipse cx="156" cy="210" rx="20" ry="13"/><ellipse cx="356" cy="210" rx="20" ry="13"/></g>
+    <g id="m-brows" stroke="#2A2156" stroke-width="7"><path id="m-brow-l" d="M175 112 Q191 97 211 104"/><path id="m-brow-r" d="M301 104 Q321 97 337 112"/></g>
+    <g id="m-mouth">
+     <g id="m-mouth-ehe"><path d="M238 211 Q256 218 274 210 C275 235 240 236 238 211Z" fill="#2A2156" stroke="#2A2156" stroke-width="8"/><ellipse cx="257" cy="225" rx="9" ry="4.5" fill="#FF8FAB"/></g>
+    </g>
+    <path id="m-sweat" d="M151 68 C167 90 165 106 151 106 C137 106 135 90 151 68Z" fill="#CFC3FF" stroke="#2A2156" stroke-width="7" transform="rotate(-20 151 90)"/>
+   </g>
+   <g id="m-arm-l" transform="rotate(56 208 324)"><path d="M192 324 A16 16 0 0 1 224 324 L224 375.3 A17 17 0 1 1 208 403 A17 17 0 1 1 192 375.3Z" fill="url(#m-bone-arm)" stroke="#2A2156" stroke-width="10"/></g>
+   <g id="m-arm-r" transform="rotate(-56 304 324)"><path d="M288 324 A16 16 0 0 1 320 324 L320 375.3 A17 17 0 1 1 304 403 A17 17 0 1 1 288 375.3Z" fill="url(#m-bone-arm)" stroke="#2A2156" stroke-width="10"/></g>
+  </g>
+ </g>
+ <g id="m-fx">
+ </g>
+</svg>

@@ -272,7 +272,7 @@ const XP = (() => {
       }
     }
 
-    return { seg, mainMats, mainOK, selBoneName, u, pPerM, W, H };
+    return { seg, mainMats, mainOK, selBoneName, u, pPerM, W, H, mirror: !!mirror };
   }
 
   function applySeg(pose, name, p){
@@ -292,7 +292,9 @@ const XP = (() => {
   // Framing: the whole body (head top y=-1.64 .. feet y=+0.047) occupies
   // 6%..94% of the canvas height, portrait or landscape, because the
   // normalised y mapping (y - Y0)/HH and the solver scale u = H/HH agree.
-  function demoFrame(t, W, H){
+  // still = true gives the motionless rest pose (arms down), for stills, videos and a specimen view.
+  function demoFrame(t, W, H, still){
+    const mv = still ? 0 : 1;
     const Jw = window.SKEL.joints;
     const rot = (p, piv, ax, ang) => {   // rotate p around pivot, Rodrigues
       const a = XU.norm(ax), c = Math.cos(ang), s = Math.sin(ang);
@@ -301,20 +303,20 @@ const XP = (() => {
         XU.add(XU.scale(d, c), XU.scale(XU.cross(a, d), s)),
         XU.scale(a, XU.dot(a, d) * (1 - c))));
     };
-    const sway = 0.018 * Math.sin(t * 0.6);
-    const bob = 0.008 * Math.sin(t * 2.1);
-    const breathe = -0.012 * (0.5 + 0.5 * Math.sin(t * 2.1)); // chest z
+    const sway = mv * 0.018 * Math.sin(t * 0.6);
+    const bob = mv * 0.008 * Math.sin(t * 2.1);
+    const breathe = mv * -0.012 * (0.5 + 0.5 * Math.sin(t * 2.1)); // chest z
 
     // left arm: relaxed, small forward/back swing around the shoulder
-    const swL = 0.09 * Math.sin(t * 1.9);
+    const swL = mv * 0.09 * Math.sin(t * 1.9);
     const armL = (p) => rot(p, Jw.shoulder_L, [1, 0, 0], swL);
     // right arm: lifted out, forearm waves (rigid rotations, lengths kept)
-    const lift = 0.95, wave = 0.5 * Math.sin(t * 2.6);
+    const lift = mv * 0.95, wave = mv * 0.5 * Math.sin(t * 2.6);
     const armR = (p) => rot(p, Jw.shoulder_R, [0, 0, 1], lift);
     const elR = armR(Jw.elbow_R);
     const foreR = (p) => rot(armR(p), elR, [0, 0, 1], wave);
     // legs: tiny knee flex
-    const kf = 0.02 * Math.sin(t * 1.9);
+    const kf = mv * 0.02 * Math.sin(t * 1.9);
     const shinL = (p) => rot(p, Jw.knee_L, [1, 0, 0], kf);
     const shinR = (p) => rot(p, Jw.knee_R, [1, 0, 0], kf);
 
@@ -341,5 +343,17 @@ const XP = (() => {
     return { img, world, hands: {} };
   }
 
-  return { solve, applySeg, applyMain, reset, demoFrame };
+  // Zoom a frame about a focus point: view = { k, cx, cy, tx, ty }; cx, cy is the focus and tx, ty where it lands (0..1).
+  // Only the image landmarks move; the solver scales the body to match.
+  function viewFrame(frame, view){
+    if (!frame || !view) return frame;
+    const k = view.k || 1, cx = view.cx === undefined ? 0.5 : view.cx, cy = view.cy === undefined ? 0.5 : view.cy;
+    const tx = view.tx === undefined ? 0.5 : view.tx, ty = view.ty === undefined ? 0.5 : view.ty;   // where the focus lands
+    const map = (pts) => pts.map((p) => [(p[0] - cx) * k + tx, (p[1] - cy) * k + ty, p[2]]);
+    const hands = {};
+    for (const side in (frame.hands || {})) hands[side] = { img: map(frame.hands[side].img), world: frame.hands[side].world };
+    return { img: map(frame.img), world: frame.world, hands };
+  }
+
+  return { solve, applySeg, applyMain, reset, demoFrame, viewFrame };
 })();

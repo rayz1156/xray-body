@@ -28,3 +28,13 @@ Controls: the &#9776; button opens the panel (rear camera, freeze, mirror vs rea
 Anatomy meshes: BodyParts3D, (c) The Database Center for Life Science, licensed under CC Attribution-Share Alike 2.1 Japan.
 Pose tracking: MediaPipe Tasks Vision (Google), loaded from CDN at runtime.
 All other code written for this project.
+## Editions (Nov 2026)
+
+The start screen offers three editions, in English and Bahasa Melayu (switch at the top right):
+
+- **Kids** (`js/ed-kids.js`, `js/kids-data.js`): cartoon skeleton, child-friendly names, Sendi the mascot, five find-the-part missions with stars, a sticker book, and two animated lessons.
+- **Forensic Lab** (`js/ed-forensic.js`, `js/forensic-data.js`): specimen skeleton, an evidence card per bone, a locate drill, a fictional case file, a stature calculator (Trotter and Gleser 1952 femur equation), and two lessons.
+- **Explore** (`js/editions.js`): the original X-ray mirror with the heart lesson.
+
+Deep links: `?edition=kids|forensic|explore`, `&lang=en|ms`, `&demo=1`. Content facts come from sourced fact sheets kept outside the repo (xray-lessons/research).
+Fonts: Fredoka, Nunito, IBM Plex Sans and IBM Plex Mono (SIL OFL 1.1, licences in `assets/fonts/`). Lesson videos are AI narrated (neural text to speech) and animated.

@@ -3,209 +3,155 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b0a14">
 <title>X-Ray Body Mirror</title>
-<style>
-:root{
-  --bg:#0b0a14; --ink:#f3eeff; --dim:#a79fc4; --line:#2b2647;
-  --accent:#6ef2c4; --hot:#ff7a90;
-}
-*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
-  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
-#stage{position:fixed;inset:0;}
-#video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  filter:brightness(.6) saturate(.7);transform:scaleX(-1);}
-#video.real{transform:none;}
-#photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
-  filter:brightness(.5) saturate(.75);display:none;}
-#bones{position:absolute;inset:0;width:100%;height:100%;
-  filter:drop-shadow(0 0 6px rgba(110,242,196,.35));}
-#labels{position:absolute;inset:0;width:100%;height:100%;touch-action:none;}
-
-/* status pill */
-#pill{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);
-  background:rgba(11,10,20,.75);border:1px solid var(--line);color:var(--accent);
-  padding:6px 14px;border-radius:99px;font-size:13px;z-index:60;pointer-events:none;
-  opacity:0;transition:opacity .25s;white-space:normal;max-width:calc(100% - 32px);text-align:center;}
-#pill.show{opacity:1;}
-
-/* controls button */
-#menuBtn{position:fixed;top:max(10px,env(safe-area-inset-top));right:12px;z-index:40;
-  width:42px;height:42px;border-radius:12px;border:1px solid var(--line);
-  background:rgba(11,10,20,.7);color:var(--ink);font-size:20px;line-height:1;}
-#menuBtn:active{background:var(--line);}
-
-/* panel */
-#panel{position:fixed;top:calc(max(10px,env(safe-area-inset-top)) + 48px);right:12px;z-index:40;
-  width:min(300px,calc(100vw - 24px));max-height:calc(100vh - 140px);overflow:auto;
-  background:rgba(18,16,34,.96);border:1px solid var(--line);border-radius:14px;
-  padding:12px 14px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.5);}
-#panel.open{display:block;}
-#panel h3{margin:10px 0 6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--dim);font-weight:600;}
-#panel h3:first-child{margin-top:0;}
-#panel .close{float:right;background:none;border:none;color:var(--dim);font-size:16px;padding:2px 6px;}
-.row{display:flex;gap:6px;margin:6px 0;}
-.row>button{flex:1;}
-button{cursor:pointer;}
-.btn,.seg{background:var(--line);border:1px solid var(--line);color:var(--ink);
-  padding:8px 8px;border-radius:9px;font-size:13px;}
-.btn.on,.seg.on{background:var(--accent);color:#07130f;border-color:var(--accent);font-weight:600;}
-.btn:active{filter:brightness(1.2);}
-.slider{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:12px;color:var(--dim);}
-.slider input{flex:1;accent-color:var(--accent);}
-
-/* bottom tabs */
-#tabs{position:fixed;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
-  display:flex;gap:8px;z-index:40;}
-#tabs button{background:rgba(11,10,20,.7);border:1px solid var(--line);color:var(--ink);
-  padding:10px 16px;border-radius:99px;font-size:14px;}
-#tabs button.on{background:var(--accent);color:#07130f;border-color:var(--accent);font-weight:600;}
-
-/* start overlay */
-#overlay{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:18px;text-align:center;
-  background:radial-gradient(ellipse at 50% 40%, #1c1640 0%, var(--bg) 70%);
-  padding:24px;transition:opacity .4s;}
-#overlay.hide{opacity:0;pointer-events:none;}
-#overlay h1{margin:0;font-size:min(9vw,44px);font-weight:700;letter-spacing:.02em;
-  color:var(--ink);text-shadow:0 0 24px rgba(110,242,196,.4);}
-#overlay p{margin:0;max-width:34em;color:var(--dim);font-size:15px;line-height:1.5;}
-#overlay .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-#overlay .big{padding:14px 22px;font-size:16px;border-radius:12px;}
-#overlay .big.primary{background:var(--accent);color:#07130f;border-color:var(--accent);font-weight:700;}
-#overlay small{color:var(--dim);font-size:11.5px;line-height:1.6;max-width:34em;}
-#overlay .credit{color:#5f7d92;font-size:10.5px;}
-
-/* lessons */
-#learnBtn{position:fixed;top:max(10px,env(safe-area-inset-top));left:12px;z-index:40;
-  height:42px;padding:0 14px;border-radius:12px;border:1px solid var(--line);
-  background:rgba(11,10,20,.7);color:var(--ink);font-size:14px;display:none;}
-#learnBtn.show{display:block;}
-#lessons{position:fixed;top:calc(max(10px,env(safe-area-inset-top)) + 48px);left:12px;z-index:46;
-  width:min(320px,calc(100vw - 24px));max-height:calc(100vh - 140px);overflow:auto;
-  background:rgba(18,16,34,.96);border:1px solid var(--line);border-radius:14px;
-  padding:8px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.5);}
-#lessons.open{display:block;}
-#lessons button{display:block;width:100%;text-align:left;background:none;border:none;
-  color:var(--ink);padding:10px;border-radius:9px;font-size:14px;}
-#lessons button:hover,#lessons button:active{background:var(--line);}
-#lessons button small{display:block;color:var(--dim);font-size:12px;margin-top:2px;}
-#card .watch{margin-top:10px;width:100%;display:none;}
-#card .watch.show{display:block;}
-#vdock{position:fixed;left:12px;top:calc(max(10px,env(safe-area-inset-top)) + 48px);z-index:39;
-  width:min(250px,46vw);background:rgba(18,16,34,.96);border:1px solid var(--line);
-  border-radius:14px;padding:8px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.5);}
-#vdock.open{display:block;}
-#vdock .vh{display:flex;align-items:center;gap:6px;margin:0 2px 6px 4px;}
-#vdock .vt{flex:1;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#vdock .vx{background:none;border:none;color:var(--dim);font-size:15px;padding:2px 6px;}
-#vdock video{display:block;width:100%;max-height:calc(100vh - 370px);min-height:120px;
-  border-radius:10px;background:#000;object-fit:contain;}
-#vLangs{margin:0 0 6px;}
-#vLangs:empty{display:none;}
-#vLangs button{font-size:12px;padding:6px 4px;}
-@media (min-width:900px){#vdock{width:300px;}}
-@media (max-height:520px){#vdock{width:min(150px,30vw);}#vdock video{max-height:calc(100vh - 150px);}}
-
-/* info card */
-#card{position:fixed;left:12px;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 62px);
-  width:min(320px,calc(100vw - 24px));background:rgba(18,16,34,.95);
-  border:1px solid var(--line);border-radius:14px;padding:12px 14px;z-index:45;display:none;}
-#card.open{display:block;}
-#card .nm{font-size:16px;font-weight:700;color:var(--hot);}
-#card .lt{font-size:12px;color:var(--dim);font-style:italic;margin:2px 0 6px;}
-#card .ds{font-size:13px;line-height:1.5;color:var(--ink);}
-#card .x{float:right;background:none;border:none;color:var(--dim);font-size:15px;}
-</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0a14'/%3E%3Cpath d='M22 18a6 6 0 1 1 8 5v18a6 6 0 1 1-8 5' stroke='%236ef2c4' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M42 46a6 6 0 1 1-8-5V23a6 6 0 1 1 8-5' stroke='%236ef2c4' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/app.css">
 </head>
-<body>
+<body class="ed-explore">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></symbol>
+  <symbol id="i-bone" viewBox="0 0 24 24"><path d="M7.5 9.5l7 7"/><circle cx="6" cy="6.5" r="2.4"/><circle cx="9" cy="4.5" r="2.4"/><circle cx="15" cy="19.5" r="2.4"/><circle cx="18" cy="17" r="2.4"/></symbol>
+  <symbol id="i-organ" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol>
+  <symbol id="i-blood" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" fill="currentColor" stroke="none"/></symbol>
+</svg>
+
 <div id="stage">
   <video id="video" playsinline muted autoplay></video>
   <img id="photo" alt="">
   <canvas id="bones"></canvas>
-  <canvas id="labels"></canvas>
+  <canvas id="labels" aria-label="Body view"></canvas>
 </div>
 
-<div id="pill"></div>
-<button id="menuBtn" aria-label="Controls">&#9776;</button>
-<button id="learnBtn">&#9654; Lessons</button>
-<div id="lessons"></div>
+<header id="top">
+  <button class="ic" id="homeBtn" data-i18n-aria="changeEdition"><svg class="i"><use href="#i-home"/></svg></button>
+  <button class="chip hidden" id="learnBtn"><svg class="i" style="width:16px;height:16px"><use href="#i-play"/></svg><span class="lbl" data-i18n="lessons">Lessons</span></button>
+  <div class="grow"></div>
+  <button class="chip" id="langBtn" aria-label="Language">BM</button>
+  <button class="ic" id="soundBtn" data-i18n-aria="sound"><svg class="i"><use href="#i-sound"/></svg></button>
+  <button class="ic" id="menuBtn" data-i18n-aria="settings"><svg class="i"><use href="#i-menu"/></svg></button>
+</header>
+<div id="pill" role="status" aria-live="polite"></div>
+<div id="lessons" class="pop"></div>
 <input type="file" id="photoInput" accept="image/*" hidden>
 
-<div id="panel">
-  <button class="close" id="panelClose">&#10005;</button>
-  <h3>Picture</h3>
+<div id="panel" class="pop">
+  <h3 data-i18n="picture">Picture</h3>
   <div class="row">
-    <button class="btn" id="liveBtn">Live camera</button>
-    <button class="btn" id="photoBtn">Use my photo</button>
+    <button class="btn" id="liveBtn" data-i18n="liveCam">Live camera</button>
+    <button class="btn" id="photoBtn" data-i18n="myPhoto">Use my photo</button>
   </div>
   <div class="row">
-    <button class="btn" id="rearBtn">Use rear camera</button>
-    <button class="btn" id="freezeBtn">Freeze</button>
+    <button class="btn" id="rearBtn" data-i18n="rearCam">Rear camera</button>
+    <button class="btn" id="freezeBtn" data-i18n="freeze">Freeze</button>
   </div>
   <div class="row">
-    <button class="seg on" id="mirrorBtn">Mirror image</button>
-    <button class="seg" id="realBtn">Real image</button>
+    <button class="seg on" id="mirrorBtn" data-i18n="mirror">Mirror</button>
+    <button class="seg" id="realBtn" data-i18n="real">Real view</button>
   </div>
-  <h3>Skeleton</h3>
-  <div class="row">
-    <button class="seg on" id="xrayBtn">Glow</button>
-    <button class="seg" id="solidBtn">Solid</button>
+  <div id="zoomBox">
+    <h3 data-i18n="zoom">Zoom</h3>
+    <div class="row" id="zoomRow"></div>
   </div>
-  <div class="slider"><span>Bone brightness</span>
-    <input type="range" id="bright" min="20" max="200" value="100"></div>
-  <div class="row"><button class="btn on" id="fingersBtn">Detailed finger bones</button></div>
-  <h3>Part names</h3>
-  <div class="row">
-    <button class="seg" id="names0">Hidden</button>
-    <button class="seg on" id="names1">Main bones</button>
-    <button class="seg" id="names2">All details</button>
+  <div id="lookBox">
+    <h3 data-i18n="look">Look</h3>
+    <div class="row">
+      <button class="seg on" id="xrayBtn" data-i18n="glow">Glow</button>
+      <button class="seg" id="solidBtn" data-i18n="solid">Solid</button>
+    </div>
+    <div class="slider"><span data-i18n="brightness">Brightness</span><input type="range" id="bright" min="20" max="200" value="100"></div>
+    <div class="row"><button class="btn on" id="fingersBtn" data-i18n="fingers">Finger bones</button></div>
   </div>
-  <div class="slider"><span>Text size</span>
-    <input type="range" id="textSize" min="80" max="160" value="100"></div>
+  <div id="namesBox">
+    <h3 data-i18n="names">Part names</h3>
+    <div class="row">
+      <button class="seg" id="names0" data-i18n="namesOff">Hidden</button>
+      <button class="seg on" id="names1" data-i18n="namesMain">Main</button>
+      <button class="seg" id="names2" data-i18n="namesAll">All</button>
+    </div>
+  </div>
+  <div class="slider"><span data-i18n="textSize">Text size</span><input type="range" id="textSize" min="80" max="160" value="100"></div>
+  <div class="row"><button class="btn" id="edBtn" data-i18n="changeEdition">Change mode</button></div>
 </div>
 
-<div id="tabs">
-  <button id="tabSkel" class="on">Skeleton</button>
-  <button id="tabOrg">Organs</button>
-  <button id="tabCirc">Circulation</button>
-</div>
+<nav id="tabs">
+  <button id="tabSkel" class="on"><svg class="i"><use href="#i-bone"/></svg><span class="lbl" data-i18n="skeleton">Skeleton</span></button>
+  <button id="tabOrg"><svg class="i"><use href="#i-organ"/></svg><span class="lbl" data-i18n="organs">Organs</span></button>
+  <button id="tabCirc"><svg class="i"><use href="#i-blood"/></svg><span class="lbl" data-i18n="circulation">Blood</span></button>
+</nav>
 
-<div id="card">
-  <button class="x" id="cardClose">&#10005;</button>
+<div id="dock"></div>
+
+<div id="card" role="dialog" aria-live="polite">
+  <button class="x" id="cardClose" data-i18n-aria="close">&#10005;</button>
   <div class="nm" id="cardName"></div>
   <div class="lt" id="cardLatin"></div>
   <div class="ds" id="cardDesc"></div>
-  <button class="btn watch" id="cardWatch">&#9654; Watch the lesson</button>
+  <div id="cardBody"></div>
+  <button class="btn primary watch" id="cardWatch"><svg class="i" style="width:16px;height:16px"><use href="#i-play"/></svg><span data-i18n="watch">Watch the lesson</span></button>
 </div>
 
 <div id="vdock">
-  <div class="vh"><div class="vt" id="vTitle"></div><button class="vx" id="vClose" aria-label="Close video">&#10005;</button></div>
+  <div class="vh"><div class="vt" id="vTitle"></div><button class="vx" id="vClose" data-i18n-aria="close">&#10005;</button></div>
   <div class="row" id="vLangs"></div>
   <video id="vPlayer" controls playsinline preload="metadata"></video>
 </div>
 
+<div id="mascot"><div id="bubble"></div><img id="mascotImg" src="assets/mascot/sendi-happy.svg" alt="Sendi"></div>
+<div id="scrim"></div>
+<div id="sheet" role="dialog"></div>
+
 <div id="overlay">
-  <h1>X-Ray Body Mirror</h1>
-  <p>See your own skeleton, organs and blood vessels drawn over your body, live on camera or on a photo of you.</p>
-  <div class="btns">
-    <button class="big primary" id="startCam">Start camera</button>
-    <button class="big btn" id="startPhoto">Use my photo</button>
-    <button class="big btn" id="startDemo">Demo without camera</button>
+  <div class="wrap" id="step1">
+    <h1 id="ovTitle">X-Ray Body Mirror</h1>
+    <div class="langsw" id="ovLang"><button data-l="en">English</button><button data-l="ms">Bahasa Melayu</button></div>
+    <p class="lead" data-i18n="pickEdition">Choose how you want to play</p>
+    <div class="eds">
+      <button class="ed kids" data-ed="kids"><div class="art"><img src="assets/mascot/sendi-cheer.svg" alt=""></div>
+        <div><b data-i18n="edKids">Kids</b><span data-i18n="edKidsSub"></span></div></button>
+      <button class="ed forensic" data-ed="forensic"><div class="art"><svg viewBox="0 0 64 64" width="52" height="52" fill="none" stroke="#f2b134" stroke-width="3" stroke-linecap="round"><circle cx="27" cy="27" r="14"/><path d="M37 37l14 14"/><path d="M21 27h12M27 21v12" stroke="#4fd1e0"/></svg></div>
+        <div><b data-i18n="edForensic">Forensic Lab</b><span data-i18n="edForensicSub"></span></div></button>
+      <button class="ed explore" data-ed="explore"><div class="art"><svg viewBox="0 0 64 64" width="52" height="52" fill="none" stroke="#6ef2c4" stroke-width="3" stroke-linecap="round"><circle cx="32" cy="14" r="7"/><path d="M32 21v22M20 28h24M24 58l8-15 8 15M22 28l-4 14M42 28l4 14"/></svg></div>
+        <div><b data-i18n="edExplore">Explore</b><span data-i18n="edExploreSub"></span></div></button>
+    </div>
+    <small><span data-i18n="privacy"></span><br><span data-i18n="credit"></span></small>
   </div>
-  <p style="font-size:13px">Tip: Stand back so your whole body is in view. For a photo, pick one that shows you head to toe.</p>
-  <small>Your camera and photos never leave your device. Not a medical device.<br>
-  Anatomy meshes: BodyParts3D, &copy; The Database Center for Life Science, CC BY-SA 2.1 Japan.</small>
+  <div class="wrap hidden" id="step2">
+    <div class="edhead" id="edHead"></div>
+    <p class="note" id="edNote"></p>
+    <div class="modes">
+      <button class="primary" id="startCam" data-i18n="startCam">Start camera</button>
+      <button id="startPhoto" data-i18n="startPhoto">Use my photo</button>
+      <button id="startDemo" data-i18n="startDemo">Play without camera</button>
+    </div>
+    <p class="note" data-i18n="tipBody"></p>
+    <button class="backlink" id="ovBack" data-i18n="back">Back</button>
+    <small><span data-i18n="privacy"></span></small>
+  </div>
 </div>
 
 <script src="data/skeleton-data.js"></script>
 <script src="js/util.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/parts.js"></script>
+<script src="js/parts-ms.js"></script>
 <script src="js/lessons.js"></script>
+<script src="js/sfx.js"></script>
+<script src="js/fx.js"></script>
 <script src="js/renderer.js"></script>
 <script src="js/pose.js"></script>
 <script src="js/labels.js"></script>
+<script src="js/editions.js"></script>
+<script src="js/kids-data.js"></script>
+<script src="js/ed-kids.js"></script>
+<script src="js/forensic-data.js"></script>
+<script src="js/ed-forensic.js"></script>
 <script src="js/app.js"></script>
 <script src="js/selftest.js"></script>
 </body>
