@@ -96,8 +96,10 @@ button{cursor:pointer;}
 #vmodal{position:fixed;inset:0;z-index:70;background:rgba(5,4,10,.9);display:none;
   flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;}
 #vmodal.open{display:flex;}
-#vmodal video{max-width:100%;max-height:calc(100vh - 130px);border-radius:14px;background:#000;}
+#vmodal video{max-width:100%;max-height:calc(100vh - 180px);border-radius:14px;background:#000;}
 #vmodal .vt{font-size:16px;font-weight:700;}
+#vLangs{margin:0;min-width:min(280px,80vw);}
+#vLangs:empty{display:none;}
 #vmodal .vx{background:var(--line);border:1px solid var(--line);color:var(--ink);
   padding:10px 22px;border-radius:99px;font-size:14px;}
 
@@ -175,6 +177,7 @@ button{cursor:pointer;}
 
 <div id="vmodal">
   <div class="vt" id="vTitle"></div>
+  <div class="row" id="vLangs"></div>
   <video id="vPlayer" controls playsinline preload="metadata"></video>
   <button class="vx" id="vClose">Close</button>
 </div>

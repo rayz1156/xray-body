@@ -50,11 +50,24 @@ window.XRAPP = (() => {
   // ---------- lessons (short videos listed in js/lessons.js) ----------
   const LESSONS = window.LESSONS || [];
   const lessonFor = (id) => LESSONS.find((L) => (L.parts || []).indexOf(id) >= 0) || null;
-  function playLesson(L){
+  // L.src is either one file or one file per language: { en: '...', ms: '...' }
+  const LANG_NAMES = { en: 'English', ms: 'Bahasa Melayu' };
+  function playLesson(L, lang){
     $('lessons').classList.remove('open');
-    $('vTitle').textContent = L.title;
-    const v = $('vPlayer');
-    v.src = L.src;
+    const v = $('vPlayer'), bar = $('vLangs');
+    const multi = L.src && typeof L.src === 'object';
+    const langs = multi ? Object.keys(L.src) : [];
+    if (multi && langs.indexOf(lang) < 0) lang = langs.indexOf(st.lessonLang) >= 0 ? st.lessonLang : langs[0];
+    $('vTitle').textContent = (multi && L.titles && L.titles[lang]) || L.title;
+    bar.textContent = '';
+    if (langs.length > 1) for (const k of langs){
+      const b = document.createElement('button');
+      b.className = 'seg' + (k === lang ? ' on' : '');
+      b.textContent = LANG_NAMES[k] || k;
+      b.addEventListener('click', () => { XU.set({ lessonLang: k }); Object.assign(st, XU.get()); playLesson(L, k); });
+      bar.appendChild(b);
+    }
+    v.src = multi ? L.src[lang] : L.src;
     if (L.poster) v.poster = L.poster; else v.removeAttribute('poster');
     $('vmodal').classList.add('open');
     v.play().catch(() => {});
