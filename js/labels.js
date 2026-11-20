@@ -75,8 +75,8 @@ const XL = (() => {
       const txt = labelText(L);
       const box = tryPlace(ax, ay, txt);
       const sel = L.id === selected;
-      ctx.strokeStyle = sel ? '#ffd166' : 'rgba(223,241,255,0.55)';
-      ctx.fillStyle = sel ? '#ffd166' : '#dff1ff';
+      ctx.strokeStyle = sel ? '#ff7a90' : 'rgba(243,238,255,0.55)';
+      ctx.fillStyle = sel ? '#ff7a90' : '#f3eeff';
       ctx.globalAlpha = st.look === 'xray' ? 0.95 : 0.9;
       ctx.beginPath();
       ctx.arc(ax, ay, 2.2 * dpr, 0, Math.PI * 2);

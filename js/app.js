@@ -2,11 +2,13 @@
 'use strict';
 window.XRAPP = (() => {
   const $ = (id) => document.getElementById(id);
-  const video = $('video'), bonesCv = $('bones'), labelsCv = $('labels');
+  const video = $('video'), photo = $('photo'), bonesCv = $('bones'), labelsCv = $('labels');
   const pill = $('pill'), overlay = $('overlay');
   const st = XU.get();
 
-  let mode = null;            // null | 'demo' | 'camera'
+  let mode = null;            // null | 'demo' | 'camera' | 'photo'
+  let photoRaw = null;        // landmarks found in the uploaded photo (photo-normalised)
+  let runMode = 'VIDEO';
   let poseLandmarker = null, handLandmarker = null;
   let lastFrame = null;       // last solved frame source (for freeze)
   let curPose = null;
@@ -17,7 +19,11 @@ window.XRAPP = (() => {
 
   // ---------- status pill ----------
   let pillMsg = '', pillTimer = 0;
-  function setPill(msg, sticky){
+  let pillHold = 0;           // messages set with a hold time are not cleared by the loop until then
+  function setPill(msg, hold){
+    const now = performance.now();
+    if (!msg && now < pillHold) return;
+    pillHold = (msg && typeof hold === 'number') ? now + hold : 0;
     pillMsg = msg;
     pill.textContent = msg;
     pill.classList.toggle('show', !!msg);
@@ -32,11 +38,45 @@ window.XRAPP = (() => {
     $('cardName').textContent = P[0];
     $('cardLatin').textContent = P[1];
     $('cardDesc').textContent = P[2];
+    const les = lessonFor(id);
+    $('cardWatch').classList.toggle('show', !!les);
+    $('cardWatch').onclick = les ? () => playLesson(les) : null;
     $('card').classList.add('open');
   }
   $('cardClose').addEventListener('click', () => {
     $('card').classList.remove('open'); selId = null; XL.setSelected(null);
   });
+
+  // ---------- lessons (short videos listed in js/lessons.js) ----------
+  const LESSONS = window.LESSONS || [];
+  const lessonFor = (id) => LESSONS.find((L) => (L.parts || []).indexOf(id) >= 0) || null;
+  function playLesson(L){
+    $('lessons').classList.remove('open');
+    $('vTitle').textContent = L.title;
+    const v = $('vPlayer');
+    v.src = L.src;
+    if (L.poster) v.poster = L.poster; else v.removeAttribute('poster');
+    $('vmodal').classList.add('open');
+    v.play().catch(() => {});
+  }
+  function closeLesson(){
+    const v = $('vPlayer');
+    v.pause(); v.removeAttribute('src'); v.load();
+    $('vmodal').classList.remove('open');
+  }
+  $('vClose').addEventListener('click', closeLesson);
+  $('vmodal').addEventListener('click', (e) => { if (e.target === $('vmodal')) closeLesson(); });
+  if (LESSONS.length){
+    $('learnBtn').classList.add('show');
+    for (const L of LESSONS){
+      const b = document.createElement('button');
+      b.textContent = L.title;
+      if (L.about){ const s = document.createElement('small'); s.textContent = L.about; b.appendChild(s); }
+      b.addEventListener('click', () => playLesson(L));
+      $('lessons').appendChild(b);
+    }
+    $('learnBtn').addEventListener('click', () => $('lessons').classList.toggle('open'));
+  }
 
   // ---------- layers ----------
   function ensureSoft(cb){
@@ -112,8 +152,8 @@ window.XRAPP = (() => {
   // video mirroring (CSS)
   function applyVideoClass(){
     video.classList.toggle('real', !st.mirror);
-    video.style.display = (mode === 'camera' && (st.mirror || true)) ? '' : 'none';
     video.style.display = mode === 'camera' ? '' : 'none';
+    photo.style.display = mode === 'photo' ? 'block' : 'none';
   }
 
   // ---------- start ----------
@@ -132,6 +172,13 @@ window.XRAPP = (() => {
   }
   $('startDemo').addEventListener('click', startDemo);
   $('startCam').addEventListener('click', () => startCamera(false));
+  $('liveBtn').addEventListener('click', () => { panel.classList.remove('open'); startCamera(false); });
+  for (const id of ['startPhoto', 'photoBtn'])
+    $(id).addEventListener('click', () => { $('photoInput').value = ''; $('photoInput').click(); });
+  $('photoInput').addEventListener('change', (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (f){ panel.classList.remove('open'); usePhoto(URL.createObjectURL(f)); }
+  });
 
   // ---------- camera + mediapipe ----------
   async function loadModels(){
@@ -164,13 +211,72 @@ window.XRAPP = (() => {
     }
   }
 
+  async function setRunMode(m){
+    if (runMode === m) return;
+    await poseLandmarker.setOptions({ runningMode: m });
+    await handLandmarker.setOptions({ runningMode: m });
+    runMode = m;
+  }
+  function stopStream(){
+    if (stream) { stream.getTracks().forEach((tr) => tr.stop()); stream = null; }
+    video.srcObject = null;
+  }
+
+  // Landmarks come back relative to the source picture. The picture is drawn
+  // with object-fit (cover for the camera, contain for a photo), so re-map them
+  // onto the canvas, which fills the whole stage.
+  function fitFrame(raw, sw, sh, cover){
+    const W = bonesCv.width, H = bonesCv.height;
+    if (!sw || !sh || !W || !H) return raw;
+    const s = cover ? Math.max(W / sw, H / sh) : Math.min(W / sw, H / sh);
+    const kx = sw * s / W, ky = sh * s / H;
+    const map = (pts) => pts.map((p) => [(p[0] - 0.5) * kx + 0.5, (p[1] - 0.5) * ky + 0.5, p[2]]);
+    const hands = {};
+    for (const side in raw.hands) hands[side] = { img: map(raw.hands[side].img), world: raw.hands[side].world };
+    return { img: map(raw.img), world: raw.world, hands };
+  }
+
+  // ---------- photo mode ----------
+  async function usePhoto(url){
+    const back = mode;
+    overlay.classList.add('hide');
+    setPill('Reading your photo\u2026');
+    try {
+      photo.crossOrigin = 'anonymous';
+      photo.src = url;
+      await photo.decode();
+    } catch (e) {
+      setPill('That file could not be opened as a picture.', 5000);
+      if (back === null) overlay.classList.remove('hide');
+      return;
+    }
+    try { await loadModels(); await setRunMode('IMAGE'); } catch (e) {
+      setPill('Could not load tracking models (offline?). Use Demo without camera.', 5000);
+      if (back === null) overlay.classList.remove('hide');
+      return;
+    }
+    stopStream();
+    // detect on a copy no larger than 1600 px so huge phone photos stay within GPU limits
+    const k = Math.min(1, 1600 / Math.max(photo.naturalWidth, photo.naturalHeight));
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(photo.naturalWidth * k); cv.height = Math.round(photo.naturalHeight * k);
+    cv.getContext('2d').drawImage(photo, 0, 0, cv.width, cv.height);
+    photoRaw = toFrame(poseLandmarker.detect(cv), handLandmarker.detect(cv));
+    mode = 'photo'; loading = false;
+    lastFrame = null;
+    if (st.freeze){ XU.set({ freeze: false }); Object.assign(st, XU.get()); $('freezeBtn').classList.remove('on'); }
+    XP.reset();
+    applyVideoClass();
+    setPill(photoRaw ? '' : 'No body found in this photo. Try one that shows you head to toe, in good light.');
+  }
+
   async function startCamera(restart){
     overlay.classList.add('hide');
     mode = 'camera';
     XP.reset();
     applyVideoClass();
     try {
-      if (stream) { stream.getTracks().forEach((tr) => tr.stop()); stream = null; }
+      stopStream();
       stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: st.rear ? 'environment' : 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
@@ -186,7 +292,7 @@ window.XRAPP = (() => {
       setPill(why + '. Allow camera access, or try Demo without camera.');
       return;
     }
-    try { await loadModels(); } catch (e) {
+    try { await loadModels(); await setRunMode('VIDEO'); } catch (e) {
       setPill('Could not load tracking models (offline?). Use Demo without camera.');
       mode = null;
       overlay.classList.remove('hide');
@@ -196,32 +302,34 @@ window.XRAPP = (() => {
     setPill('', false);
   }
 
-  function readCamera(){
-    if (!poseLandmarker || video.readyState < 2) return null;
-    const now = performance.now();
-    const pose = poseLandmarker.detectForVideo(video, now);
+  // MediaPipe results -> { img, world, hands } in source-picture coordinates
+  function toFrame(pose, hres){
     if (!pose.landmarks || !pose.landmarks.length) return null;
     const lm = pose.landmarks[0];
     const img = lm.map((p) => [p.x, p.y, p.visibility === undefined ? 1 : p.visibility]);
     const world = (pose.worldLandmarks && pose.worldLandmarks.length)
       ? pose.worldLandmarks[0].map((p) => [p.x, p.y, p.z]) : img.map(() => [0, 0, 0]);
     const hands = {};
-    if (handLandmarker){
-      const hres = handLandmarker.detectForVideo(video, now);
-      for (const hl of (hres.landmarks || [])){
-        const w0 = hl[0];
-        // associate by x proximity to wrists (15 left, 16 right) in image coords
-        const dL = Math.abs(w0.x - img[15][0]) + Math.abs(w0.y - img[15][1]);
-        const dR = Math.abs(w0.x - img[16][0]) + Math.abs(w0.y - img[16][1]);
-        const side = dL < dR ? 'L' : 'R';
-        if (hands[side]) continue;
-        hands[side] = {
-          img: hl.map((p) => [p.x, p.y, p.visibility === undefined ? 1 : p.visibility]),
-          world: hl.map((p) => [p.x, p.y, p.z]),
-        };
-      }
+    for (const hl of ((hres && hres.landmarks) || [])){
+      const w0 = hl[0];
+      // associate by proximity to wrists (15 left, 16 right) in image coords
+      const dL = Math.abs(w0.x - img[15][0]) + Math.abs(w0.y - img[15][1]);
+      const dR = Math.abs(w0.x - img[16][0]) + Math.abs(w0.y - img[16][1]);
+      const side = dL < dR ? 'L' : 'R';
+      if (hands[side]) continue;
+      hands[side] = {
+        img: hl.map((p) => [p.x, p.y, p.visibility === undefined ? 1 : p.visibility]),
+        world: hl.map((p) => [p.x, p.y, p.z]),
+      };
     }
     return { img, world, hands };
+  }
+  function readCamera(){
+    if (!poseLandmarker || runMode !== 'VIDEO' || video.readyState < 2) return null;
+    const now = performance.now();
+    const raw = toFrame(poseLandmarker.detectForVideo(video, now),
+                        handLandmarker ? handLandmarker.detectForVideo(video, now) : null);
+    return raw && fitFrame(raw, video.videoWidth, video.videoHeight, true);
   }
 
   // ---------- main loop ----------
@@ -232,10 +340,14 @@ window.XRAPP = (() => {
       if (mode === null) { if (!loading) setPill('', false); return; }
       const W = bonesCv.width, H = bonesCv.height;
       let frame = null;
-      if (st.freeze){ frame = lastFrame; }
+      if (st.freeze && mode !== 'photo'){ frame = lastFrame; }
       else if (mode === 'demo'){ frame = XP.demoFrame(t, W, H); }
       else if (mode === 'camera'){ frame = readCamera(); }
-      if (frame) lastFrame = frame;
+      else if (mode === 'photo'){
+        if (!photoRaw){ XR.draw({ seg: {}, mainOK: false }, st, t); return; }   // keep the hint on screen
+        frame = fitFrame(photoRaw, photo.naturalWidth, photo.naturalHeight, false);
+      }
+      if (frame && mode !== 'photo') lastFrame = frame;
       if (mode === 'camera' && !frame){
         if (!noBodySince) noBodySince = performance.now();
         else if (performance.now() - noBodySince > 800) setPill('No body found', false);
@@ -251,7 +363,7 @@ window.XRAPP = (() => {
         }
       }
       if (frame){
-        curPose = XP.solve(frame, W, H, st.mirror, selId);
+        curPose = XP.solve(frame, W, H, mode === 'photo' ? false : st.mirror, selId);
         XR.draw(curPose, st, t);
         XL.draw(curPose, st, t);
       } else {
@@ -277,5 +389,5 @@ window.XRAPP = (() => {
     loading = true;
   }
 
-  return { select };
+  return { select, usePhoto, playLesson };
 })();

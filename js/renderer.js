@@ -42,38 +42,48 @@ const XR = (() => {
   const VS_BONES = VS_HEAD + `
     attribute vec3 aPos; attribute vec3 aNrm; attribute vec2 aBone;
     uniform vec3 uQs, uQc;
-    varying vec3 vN; varying float vSel;
+    varying vec3 vN; varying float vSel; varying float vY;
     uniform float uSel;
     void main(){
       vec3 p = vec3(aPos) * uQs / 32767.0 + uQc;
       vec4 q = uM * vec4(p, 1.0);
       gl_Position = vec4(toPx(q), 1.0);
+      vY = 0.5 - gl_Position.y * 0.5;       // 0 top of screen, 1 bottom
       vN = normalize(uN * aNrm);
       vSel = (uSel >= 0.0 && abs(float(aBone.x) - uSel) < 0.5) ? 1.0 : 0.0;
     }`;
 
+  // Look: pearl bone core with a mint edge glow that turns violet lower down,
+  // plus a slow light band sweeping down the body.
   const FS_BONES = `
     precision mediump float;
-    varying vec3 vN; varying float vSel;
-    uniform float uMode;     // 0 x-ray, 1 solid
-    uniform float uBright;
-    const vec3 BONE = vec3(0.62, 0.85, 0.95);
-    const vec3 IVORY = vec3(0.93, 0.91, 0.82);
-    const vec3 HOT = vec3(1.0, 0.82, 0.4);
+    varying vec3 vN; varying float vSel; varying float vY;
+    uniform float uMode;     // 0 glow, 1 solid
+    uniform float uBright, uTime;
+    const vec3 PEARL = vec3(1.0, 0.94, 0.84);
+    const vec3 MINT = vec3(0.36, 1.0, 0.78);
+    const vec3 VIOLET = vec3(0.66, 0.52, 1.0);
+    const vec3 CLAY = vec3(0.90, 0.84, 0.78);
+    const vec3 HOT = vec3(1.0, 0.45, 0.55);
     void main(){
       vec3 n = normalize(vN);
       float nz = abs(n.z);
+      vec3 edge = mix(MINT, VIOLET, smoothstep(0.15, 0.95, vY));
+      float sweep = smoothstep(0.07, 0.0, abs(fract(vY - uTime * 0.11) - 0.5));
       vec3 col;
       if (uMode < 0.5){
-        float fres = pow(1.0 - nz, 1.3);
-        col = BONE * (0.10 + 0.95 * fres) * uBright;
+        float fres = pow(1.0 - nz, 1.5);
+        col = (PEARL * 0.13 + edge * 0.85 * fres + PEARL * 0.22 * fres * fres) * uBright;
+        col += edge * sweep * 0.22 * (0.3 + fres);
       } else {
-        vec3 L = normalize(vec3(0.35, -0.45, 0.82));
+        vec3 L = normalize(vec3(-0.40, -0.50, 0.77));
         float d = max(dot(n, L), 0.0);
-        float rim = pow(1.0 - nz, 2.5);
-        col = IVORY * (0.25 + 0.75 * d) + vec3(0.35, 0.8, 1.0) * rim * 0.35;
+        float band = floor(d * 4.0 + 0.5) / 4.0;          // soft stepped shading
+        float rim = pow(1.0 - nz, 2.2);
+        col = CLAY * (0.30 + 0.70 * mix(d, band, 0.55)) + edge * rim * 0.45;
       }
-      col = mix(col, HOT * (uMode < 0.5 ? (0.25 + 0.75 * pow(1.0 - nz, 1.0)) : (0.4 + 0.6 * max(dot(n, vec3(0., 0., 1.)), 0.))), vSel * 0.85);
+      float hs = uMode < 0.5 ? (0.25 + 0.75 * (1.0 - nz)) : (0.4 + 0.6 * nz);
+      col = mix(col, HOT * hs, vSel * 0.85);
       gl_FragColor = vec4(col, 1.0);
     }`;
 
@@ -240,10 +250,10 @@ const XR = (() => {
     const bright = st.bright / 100;
 
     if (st.layerOrg || st.layerCirc){ drawSoft(pose, st, t, w, h, xray, bright); }
-    if (st.layerSkel){ drawBones(pose, st, w, h, xray, bright); }
+    if (st.layerSkel){ drawBones(pose, st, t, w, h, xray, bright); }
   }
 
-  function drawBones(pose, st, w, h, xray, bright){
+  function drawBones(pose, st, t, w, h, xray, bright){
     gl.useProgram(progBones);
     gl.uniform2f(U(progBones, 'uView'), w, h);
     gl.uniform1f(U(progBones, 'uZScale'), 2.4 / Math.max(w, h));
@@ -251,6 +261,7 @@ const XR = (() => {
     gl.uniform3fv(U(progBones, 'uQc'), window.SKEL.qc);
     gl.uniform1f(U(progBones, 'uMode'), xray ? 0 : 1);
     gl.uniform1f(U(progBones, 'uBright'), bright);
+    gl.uniform1f(U(progBones, 'uTime'), t);
     const selName = pose.selBoneName;   // e.g. 'femur' or null
     const selIdx = selName ? window.SKEL.ids.indexOf(selName) : -1;
     gl.uniform1f(U(progBones, 'uSel'), selIdx);
