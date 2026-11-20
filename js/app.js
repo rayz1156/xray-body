@@ -39,9 +39,11 @@ window.XRAPP = (() => {
     $('cardLatin').textContent = P[1];
     $('cardDesc').textContent = P[2];
     const les = lessonFor(id);
-    $('cardWatch').classList.toggle('show', !!les);
     $('cardWatch').onclick = les ? () => playLesson(les) : null;
     $('card').classList.add('open');
+    // a part that has a lesson plays it in the left panel, without leaving the body view
+    if (les && les !== curLesson) playLesson(les);
+    syncWatch();
   }
   $('cardClose').addEventListener('click', () => {
     $('card').classList.remove('open'); selId = null; XL.setSelected(null);
@@ -52,7 +54,14 @@ window.XRAPP = (() => {
   const lessonFor = (id) => LESSONS.find((L) => (L.parts || []).indexOf(id) >= 0) || null;
   // L.src is either one file or one file per language: { en: '...', ms: '...' }
   const LANG_NAMES = { en: 'English', ms: 'Bahasa Melayu' };
+  let curLesson = null;       // lesson showing in the left panel
+  // the card's Watch button is only needed when its lesson is not already on screen
+  function syncWatch(){
+    const les = selId ? lessonFor(selId) : null;
+    $('cardWatch').classList.toggle('show', !!les && les !== curLesson);
+  }
   function playLesson(L, lang){
+    curLesson = L;
     $('lessons').classList.remove('open');
     const v = $('vPlayer'), bar = $('vLangs');
     const multi = L.src && typeof L.src === 'object';
@@ -69,16 +78,18 @@ window.XRAPP = (() => {
     }
     v.src = multi ? L.src[lang] : L.src;
     if (L.poster) v.poster = L.poster; else v.removeAttribute('poster');
-    $('vmodal').classList.add('open');
+    $('vdock').classList.add('open');
+    syncWatch();
     v.play().catch(() => {});
   }
   function closeLesson(){
     const v = $('vPlayer');
     v.pause(); v.removeAttribute('src'); v.load();
-    $('vmodal').classList.remove('open');
+    $('vdock').classList.remove('open');
+    curLesson = null;
+    syncWatch();
   }
   $('vClose').addEventListener('click', closeLesson);
-  $('vmodal').addEventListener('click', (e) => { if (e.target === $('vmodal')) closeLesson(); });
   if (LESSONS.length){
     $('learnBtn').classList.add('show');
     for (const L of LESSONS){
